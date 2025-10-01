@@ -61,11 +61,12 @@ function PackageCard({ pkg, onDelete }: { pkg: Package; onDelete: (id: string) =
     ACTIVE: 'bg-green-100 text-green-700',
     DRAFT: 'bg-yellow-100 text-yellow-700',
     INACTIVE: 'bg-slate-100 text-slate-700',
+    SUSPENDED: 'bg-red-100 text-red-700',
+    ARCHIVED: 'bg-gray-100 text-gray-700',
   };
 
   const getPrice = () => {
     if (pkg.pricing?.basePrice) return pkg.pricing.basePrice;
-    if (pkg.price) return pkg.price;
     return 0;
   };
 
@@ -120,18 +121,18 @@ function PackageCard({ pkg, onDelete }: { pkg: Package; onDelete: (id: string) =
       {/* Content */}
       <div className="p-4">
         <h3 className="font-bold text-slate-900 text-sm mb-2 line-clamp-2 min-h-[2.5rem]">
-          {pkg.title || pkg.name || '-'}
+          {pkg.title || '-'}
         </h3>
 
         <div className="space-y-2 mb-3">
           <div className="flex items-center text-xs text-slate-600">
             <MapPin className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
-            {pkg.destination || pkg.place || '-'}
+            {pkg.destinations?.join(', ') || '-'}
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center text-slate-600">
               <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
-              {pkg.duration || '-'}
+              {pkg.duration ? `${pkg.duration.days} days` : '-'}
             </span>
             <span className="flex items-center text-slate-600">
               <Star className="w-3.5 h-3.5 mr-1 text-yellow-500 fill-yellow-500" />
@@ -175,11 +176,13 @@ export default function OperatorPackagesPage() {
       
       const response = await packageService.getPackages({
         limit: 50,
-        offset: 0,
+        page: 1,
       });
 
       if (response.success && response.data) {
-        setPackages(response.data);
+        // Extract packages from paginated response
+        const packagesData = response.data.data || [];
+        setPackages(packagesData);
       } else {
         setError(response.error || 'Failed to load packages');
         setPackages([]);
@@ -228,9 +231,9 @@ export default function OperatorPackagesPage() {
   };
 
   // Filter packages
-  const filteredPackages = packages.filter(pkg =>
-    (pkg.title || pkg.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (pkg.destination || pkg.place || '').toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPackages = (packages || []).filter(pkg =>
+    (pkg.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (pkg.destinations?.join(', ') || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
