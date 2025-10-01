@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useAuth } from '@/context/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,9 +17,44 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+// Simple auth hook - replace with your actual Supabase auth later
+function useSimpleAuth() {
+  const signIn = async (email: string, password: string) => {
+    try {
+      // Mock login - replace with actual Supabase auth
+      const mockUser = {
+        email,
+        role: email.includes('operator') ? 'TOUR_OPERATOR' : 
+              email.includes('agent') ? 'TRAVEL_AGENT' : 
+              email.includes('admin') ? 'ADMIN' : 'TOUR_OPERATOR',
+        firstName: email.split('@')[0],
+        lastName: 'User',
+        name: email.split('@')[0] + ' User'
+      };
+      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        localStorage.setItem('token', 'mock-token-' + Date.now());
+      }
+      
+      return { 
+        success: true, 
+        data: { user: mockUser }
+      };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: 'Invalid credentials' 
+      };
+    }
+  };
+
+  return { signIn };
+}
+
 export function ModernLoginForm() {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn } = useSimpleAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
