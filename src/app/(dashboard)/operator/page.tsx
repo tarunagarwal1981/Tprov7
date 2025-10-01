@@ -7,12 +7,16 @@ import {
   Package,
   Calendar,
   Users,
+  TrendingUp,
+  TrendingDown,
   ArrowUpRight,
-  ArrowDownRight
+  Clock,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 import { OperatorSidebar } from '@/components/dashboard/OperatorSidebar';
 
-// Stats Card Component
+// Beautiful Stats Card
 interface StatsCardProps {
   title: string;
   value: string | number;
@@ -24,46 +28,86 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, change, icon: Icon, color, index }: StatsCardProps) {
   const colors = {
-    blue: 'from-blue-500 to-blue-600',
-    green: 'from-green-500 to-green-600',
-    purple: 'from-purple-500 to-purple-600',
-    orange: 'from-orange-500 to-orange-600',
+    blue: {
+      gradient: 'from-blue-500 to-blue-600',
+      light: 'from-blue-50 to-blue-100',
+      text: 'text-blue-600'
+    },
+    green: {
+      gradient: 'from-green-500 to-green-600',
+      light: 'from-green-50 to-green-100',
+      text: 'text-green-600'
+    },
+    purple: {
+      gradient: 'from-purple-500 to-purple-600',
+      light: 'from-purple-50 to-purple-100',
+      text: 'text-purple-600'
+    },
+    orange: {
+      gradient: 'from-orange-500 to-orange-600',
+      light: 'from-orange-50 to-orange-100',
+      text: 'text-orange-600'
+    },
   };
 
   const isPositive = change >= 0;
+  const selectedColor = colors[color];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-lg transition-shadow"
+      whileHover={{ y: -4 }}
+      className="group"
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-slate-600 mb-2">{title}</p>
-          <p className="text-3xl font-bold text-slate-900 mb-3">{value}</p>
+      <div className="relative bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300">
+        {/* Hover gradient background */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${selectedColor.light} opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-300`} />
+        
+        <div className="relative">
+          {/* Header with Icon */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                {title}
+              </p>
+              <p className="text-3xl font-bold text-slate-900">
+                {value}
+              </p>
+            </div>
+            
+            {/* Icon Container - Fixed Size */}
+            <div className={`p-3 bg-gradient-to-br ${selectedColor.gradient} rounded-xl shadow-md`}>
+              <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
+            </div>
+          </div>
+
+          {/* Change Indicator */}
           <div className="flex items-center space-x-2">
-            {isPositive ? (
-              <ArrowUpRight className="w-4 h-4 text-green-600" />
-            ) : (
-              <ArrowDownRight className="w-4 h-4 text-red-600" />
-            )}
-            <span className={`text-sm font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {Math.abs(change)}%
-            </span>
+            <div className={`flex items-center space-x-1 px-2 py-1 rounded-lg ${
+              isPositive ? 'bg-green-50' : 'bg-red-50'
+            }`}>
+              {isPositive ? (
+                <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+              ) : (
+                <TrendingDown className="w-3.5 h-3.5 text-red-600" />
+              )}
+              <span className={`text-sm font-bold ${
+                isPositive ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {Math.abs(change)}%
+              </span>
+            </div>
             <span className="text-sm text-slate-500">vs last month</span>
           </div>
-        </div>
-        <div className={`p-3 bg-gradient-to-br ${colors[color]} rounded-xl`}>
-          <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Recent Booking Component
+// Booking Card
 interface Booking {
   id: string;
   customer: string;
@@ -74,10 +118,22 @@ interface Booking {
 }
 
 function RecentBookings({ bookings }: { bookings: Booking[] }) {
-  const statusColors = {
-    confirmed: 'bg-green-100 text-green-700',
-    pending: 'bg-yellow-100 text-yellow-700',
-    cancelled: 'bg-red-100 text-red-700',
+  const statusConfig = {
+    confirmed: {
+      bg: 'bg-green-50',
+      text: 'text-green-700',
+      icon: CheckCircle
+    },
+    pending: {
+      bg: 'bg-yellow-50',
+      text: 'text-yellow-700',
+      icon: Clock
+    },
+    cancelled: {
+      bg: 'bg-red-50',
+      text: 'text-red-700',
+      icon: XCircle
+    },
   };
 
   return (
@@ -85,87 +141,158 @@ function RecentBookings({ bookings }: { bookings: Booking[] }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
-      className="bg-white rounded-xl p-6 border border-slate-200"
+      className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm h-full"
     >
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-slate-900">Recent Bookings</h3>
-        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-          View All
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+            <Calendar className="w-5 h-5 text-white" />
+          </div>
+          <h3 className="text-lg font-bold text-slate-900">Recent Bookings</h3>
+        </div>
+        <button className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
+          View All →
         </button>
       </div>
       
-      <div className="space-y-4">
-        {bookings.map((booking, index) => (
-          <motion.div
-            key={booking.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 + index * 0.1 }}
-            className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
-          >
-            <div className="flex-1">
-              <p className="font-medium text-slate-900">{booking.customer}</p>
-              <p className="text-sm text-slate-600">{booking.package}</p>
-              <p className="text-xs text-slate-500 mt-1">{booking.date}</p>
-            </div>
-            <div className="text-right">
-              <p className="font-semibold text-slate-900">${booking.amount.toLocaleString()}</p>
-              <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-1 ${statusColors[booking.status]}`}>
-                {booking.status}
-              </span>
-            </div>
-          </motion.div>
-        ))}
+      <div className="space-y-3">
+        {bookings.map((booking, index) => {
+          const StatusIcon = statusConfig[booking.status].icon;
+          
+          return (
+            <motion.div
+              key={booking.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 + index * 0.1 }}
+              whileHover={{ x: 4 }}
+              className="group"
+            >
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all duration-200 border border-slate-100">
+                {/* Customer Info */}
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0">
+                    {booking.customer.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-900 truncate">
+                      {booking.customer}
+                    </p>
+                    <p className="text-sm text-slate-600 truncate">
+                      {booking.package}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5 flex items-center">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {booking.date}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Amount & Status */}
+                <div className="text-right ml-4 flex-shrink-0">
+                  <p className="font-bold text-slate-900 mb-2">
+                    ${booking.amount.toLocaleString()}
+                  </p>
+                  <div className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg ${statusConfig[booking.status].bg}`}>
+                    <StatusIcon className={`w-3.5 h-3.5 ${statusConfig[booking.status].text}`} />
+                    <span className={`text-xs font-semibold uppercase ${statusConfig[booking.status].text}`}>
+                      {booking.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </motion.div>
   );
 }
 
-// Quick Actions Component
+// Quick Actions
 function QuickActions() {
   const actions = [
-    { name: 'Create Package', href: '/operator/packages/create', color: 'blue' },
-    { name: 'View Bookings', href: '/operator/bookings', color: 'green' },
-    { name: 'Manage Agents', href: '/operator/agents', color: 'purple' },
-    { name: 'View Analytics', href: '/operator/analytics', color: 'orange' },
+    { 
+      name: 'Create Package', 
+      href: '/operator/packages/create', 
+      gradient: 'from-blue-500 to-blue-600',
+      icon: Package,
+      description: 'Add new travel package'
+    },
+    { 
+      name: 'View Bookings', 
+      href: '/operator/bookings', 
+      gradient: 'from-green-500 to-green-600',
+      icon: Calendar,
+      description: 'Manage all bookings'
+    },
+    { 
+      name: 'Manage Agents', 
+      href: '/operator/agents', 
+      gradient: 'from-purple-500 to-purple-600',
+      icon: Users,
+      description: 'View travel agents'
+    },
+    { 
+      name: 'View Analytics', 
+      href: '/operator/analytics', 
+      gradient: 'from-orange-500 to-orange-600',
+      icon: TrendingUp,
+      description: 'Performance insights'
+    },
   ];
-
-  const colors = {
-    blue: 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
-    green: 'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700',
-    purple: 'from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700',
-    orange: 'from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700',
-  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
-      className="bg-white rounded-xl p-6 border border-slate-200"
+      className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm h-full"
     >
-      <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
-      <div className="grid grid-cols-2 gap-3">
-        {actions.map((action, index) => (
-          <motion.a
-            key={action.name}
-            href={action.href}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.7 + index * 0.05 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`p-4 bg-gradient-to-br ${colors[action.color as keyof typeof colors]} text-white rounded-lg font-medium text-sm text-center transition-all shadow-soft hover:shadow-medium`}
-          >
-            {action.name}
-          </motion.a>
-        ))}
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="p-2 bg-gradient-to-br from-orange-500 to-pink-600 rounded-xl">
+          <ArrowUpRight className="w-5 h-5 text-white" />
+        </div>
+        <h3 className="text-lg font-bold text-slate-900">Quick Actions</h3>
+      </div>
+      
+      <div className="space-y-3">
+        {actions.map((action, index) => {
+          const ActionIcon = action.icon;
+          return (
+            <motion.a
+              key={action.name}
+              href={action.href}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7 + index * 0.05 }}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className={`group block relative p-4 bg-gradient-to-br ${action.gradient} rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300`}
+            >
+              <div className="relative flex items-center space-x-3">
+                <div className="p-2.5 bg-white/20 rounded-lg backdrop-blur-sm flex-shrink-0">
+                  <ActionIcon className="w-5 h-5 text-white" strokeWidth={2.5} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-white mb-0.5">
+                    {action.name}
+                  </p>
+                  <p className="text-xs text-white/80">
+                    {action.description}
+                  </p>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-white/60 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
+              </div>
+            </motion.a>
+          );
+        })}
       </div>
     </motion.div>
   );
 }
 
-// Main Dashboard Component
+// Main Dashboard
 export default function OperatorDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [stats, setStats] = useState({
@@ -174,11 +301,9 @@ export default function OperatorDashboard() {
     totalBookings: 0,
     activeAgents: 0,
   });
-
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
-    // Simulate API call
     setStats({
       totalRevenue: 125430,
       totalPackages: 24,
@@ -190,7 +315,7 @@ export default function OperatorDashboard() {
       {
         id: '1',
         customer: 'John Smith',
-        package: 'Bali Adventure',
+        package: 'Bali Adventure Package',
         amount: 2500,
         status: 'confirmed',
         date: 'Today, 2:30 PM',
@@ -198,7 +323,7 @@ export default function OperatorDashboard() {
       {
         id: '2',
         customer: 'Sarah Johnson',
-        package: 'European Tour',
+        package: 'European Grand Tour',
         amount: 4200,
         status: 'pending',
         date: 'Today, 1:15 PM',
@@ -206,7 +331,7 @@ export default function OperatorDashboard() {
       {
         id: '3',
         customer: 'Mike Wilson',
-        package: 'Dubai Luxury',
+        package: 'Dubai Luxury Experience',
         amount: 3800,
         status: 'confirmed',
         date: 'Yesterday, 5:45 PM',
@@ -226,14 +351,18 @@ export default function OperatorDashboard() {
         style={{ marginLeft: sidebarCollapsed ? 80 : 280 }}
       >
         {/* Header */}
-        <header className="bg-white border-b border-slate-200 px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
-              <p className="text-slate-600 mt-1">Welcome back! Here's what's happening today.</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <select className="px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <header className="sticky top-0 z-30 bg-white border-b border-slate-200">
+          <div className="px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">
+                  Dashboard Overview
+                </h1>
+                <p className="text-slate-600 mt-1">
+                  Welcome back! Here's what's happening today.
+                </p>
+              </div>
+              <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
                 <option>Last 7 days</option>
                 <option>Last 30 days</option>
                 <option>Last 90 days</option>

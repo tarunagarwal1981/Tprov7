@@ -1,21 +1,35 @@
-'use client';
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
 
-import { Header } from '@/components/landing/Header';
-import { Hero } from '@/components/landing/Hero';
-import { Stats } from '@/components/landing/Stats';
-import { Features } from '@/components/landing/Features';
-import { Footer } from '@/components/landing/Footer';
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
 
-export default function LandingPage() {
+export const metadata: Metadata = {
+  title: "TravelPro - AI-Powered Travel Platform",
+  description: "Modern travel booking platform for operators and agents",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/30 to-white">
-      <Header />
-      <main>
-        <Hero />
-        <Stats />
-        <Features />
-      </main>
-      <Footer />
-    </div>
+    <html lang="en" className="h-full">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-white`}
+      >
+        {children}
+      </body>
+    </html>
   );
 }
