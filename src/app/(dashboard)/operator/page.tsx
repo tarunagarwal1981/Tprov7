@@ -7,8 +7,6 @@ import {
   Package,
   Calendar,
   Users,
-  TrendingUp,
-  TrendingDown,
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
