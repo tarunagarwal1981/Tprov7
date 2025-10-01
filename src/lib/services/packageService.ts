@@ -1,13 +1,74 @@
 import { supabase } from '../supabase'
-import { 
-  DbPackage, 
-  DbPackageInsert, 
-  DbPackageUpdate, 
-  PackageWithDetails,
-  SupabaseResponse,
-  SupabaseListResponse 
-} from '../supabase-types'
 import { Package, PackageStatus, PackageType, VehicleConfig, PickupPoint, AdditionalService } from '../types'
+
+// Database types for Supabase
+export interface DbPackage {
+  id: string;
+  tour_operator_id: string;
+  title: string;
+  description: string;
+  type: string;
+  status: string;
+  pricing: any;
+  itinerary: any;
+  inclusions: string[];
+  exclusions: string[];
+  terms_and_conditions: string[];
+  cancellation_policy: any;
+  images: string[];
+  destinations: string[];
+  duration: any;
+  group_size: any;
+  difficulty: string;
+  tags: string[];
+  is_featured: boolean;
+  rating?: number;
+  review_count?: number;
+  created_at: string;
+  updated_at: string;
+  activity_category?: string;
+  available_days?: string[];
+  operational_hours?: any;
+  meeting_point?: string;
+  emergency_contact?: any;
+  transfer_options?: string[];
+  max_capacity?: number;
+  languages_supported?: string[];
+  accessibility_info?: string[];
+  age_restrictions?: any;
+  important_info?: string;
+  faq?: any[];
+  variants?: any[];
+  transfer_service_type?: string;
+  distance_km?: number;
+  estimated_duration?: string;
+  advance_booking_hours?: number;
+  cancellation_policy_text?: string;
+  vehicle_configs?: any[];
+  pickup_points?: any[];
+  dropoff_points?: any[];
+  additional_services?: any[];
+}
+
+export interface DbPackageInsert extends Omit<DbPackage, 'id' | 'created_at' | 'updated_at'> {}
+export interface DbPackageUpdate extends Partial<DbPackageInsert> {}
+
+export interface PackageWithDetails extends DbPackage {
+  tour_operator?: any;
+  bookings?: any[];
+  reviews?: any[];
+}
+
+export interface SupabaseResponse<T> {
+  data: T | null;
+  error: any;
+}
+
+export interface SupabaseListResponse<T> {
+  data: T[] | null;
+  error: any;
+  count?: number;
+}
 
 // Service response interfaces to match existing code
 export interface ServiceResponse<T> {
@@ -261,14 +322,14 @@ export class PackageService {
       }
 
       const totalPackages = packages?.length || 0;
-      const activePackages = packages?.filter((pkg: any) => pkg.status === 'ACTIVE').length || 0;
+      const activePackages = packages?.filter((pkg: DbPackage) => pkg.status === 'ACTIVE').length || 0;
       
       console.log('📊 PackageService: Basic stats calculated:', { totalPackages, activePackages });
       
       // Calculate total revenue from package pricing
       let totalRevenue = 0;
       if (packages && packages.length > 0) {
-        totalRevenue = packages.reduce((sum: number, pkg: any) => {
+        totalRevenue = packages.reduce((sum: number, pkg: DbPackage) => {
           const pricing = pkg.pricing as any;
           // Try different pricing field names
           const basePrice = pricing?.basePrice || pricing?.price || pricing?.adultPrice || pricing?.totalPrice || 0;
@@ -279,7 +340,7 @@ export class PackageService {
       
       // Calculate average rating
       const averageRating = packages && packages.length > 0 
-        ? packages.reduce((sum: number, pkg: any) => sum + (Number(pkg.rating) || 0), 0) / packages.length 
+        ? packages.reduce((sum: number, pkg: DbPackage) => sum + (Number(pkg.rating) || 0), 0) / packages.length 
         : 0;
 
       const finalStats = {
@@ -352,8 +413,8 @@ export class PackageService {
         title: packageData.title,
         type: packageData.type,
         status: packageData.status,
-        hasTransferServices: !!packageData.transfer_services,
-        hasActivities: !!packageData.activities,
+        hasTransferServiceType: !!packageData.transfer_service_type,
+        hasActivityCategory: !!packageData.activity_category,
       });
       
       const { data, error } = await supabase
@@ -481,7 +542,7 @@ export class PackageService {
       return { data, error: null, count }
     } catch (error) {
       console.error('Error fetching packages:', error)
-      return { data: null, error, count: null }
+      return { data: null, error, count: undefined }
     }
   }
 
@@ -742,7 +803,7 @@ export class PackageService {
 
       // Convert to app format
       const appPackage = PackageService.convertToAppPackage(packageData);
-      const appVehicleConfigs: VehicleConfig[] = vehicleConfigs.map(config => ({
+      const appVehicleConfigs: VehicleConfig[] = vehicleConfigs.map((config: any) => ({
         id: config.id,
         vehicleType: config.vehicle_type,
         name: config.name,
@@ -871,7 +932,7 @@ export class PackageService {
       }
 
       // Convert to app format
-      const packages = data?.map(pkg => {
+      const packages = data?.map((pkg: any) => {
         const appPackage = PackageService.convertToAppPackage(pkg);
         const vehicleConfigs: VehicleConfig[] = pkg.transfer_vehicle_configs?.map((config: any) => ({
           id: config.id,
