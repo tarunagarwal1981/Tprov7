@@ -31,7 +31,7 @@ export default function CreatePackagePage() {
         style={{ marginLeft: sidebarCollapsed ? 80 : 280 }}
       >
         {/* Header */}
-        <header className="bg-white border-b border-slate-200 px-8 py-6">
+        <header className="bg-white border-b border-slate-200 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
@@ -52,7 +52,7 @@ export default function CreatePackagePage() {
         </header>
 
         {/* Main Content */}
-        <main className="p-8">
+        <main className="p-4">
           <CompactPackageWizard 
             onSuccess={handleSuccess}
             onCancel={handleCancel}

@@ -175,7 +175,7 @@ const ActivityDetailsForm: React.FC<ActivityDetailsFormProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Activity Category */}
       <div className="backdrop-blur-xl rounded-2xl border border-white/20 p-6"
         style={{
@@ -254,7 +254,7 @@ const ActivityDetailsForm: React.FC<ActivityDetailsFormProps> = ({
           <Clock className="h-5 w-5 text-green-600" />
           <span className="text-green-600 font-medium text-sm">Operational Hours</span>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField label="Start Time">
               <CustomInput
@@ -459,7 +459,7 @@ const ActivityDetailsForm: React.FC<ActivityDetailsFormProps> = ({
       </div>
 
       {/* Capacity & Languages */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="backdrop-blur-xl rounded-2xl border border-white/20 p-6"
           style={{
             background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',

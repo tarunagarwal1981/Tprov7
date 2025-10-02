@@ -203,7 +203,7 @@ const ActivityPoliciesForm: React.FC<ActivityPoliciesFormProps> = ({
   const faqCategories = ['General', 'Booking', 'Cancellation', 'Accessibility', 'Safety', 'Pricing', 'Other'];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Important Information */}
       <div className="backdrop-blur-xl rounded-2xl border border-white/20 p-6"
         style={{
@@ -238,7 +238,7 @@ const ActivityPoliciesForm: React.FC<ActivityPoliciesFormProps> = ({
         <div className="flex items-center gap-2 mb-4">
           <span className="text-gray-600 font-medium text-sm">Age Restrictions & Policies</span>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField label="Minimum Age">
               <CustomInput

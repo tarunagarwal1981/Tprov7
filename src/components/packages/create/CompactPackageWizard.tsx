@@ -13,7 +13,7 @@ import {
   MapPin,
   Clock,
   DollarSign,
-  Calendar,
+  Calendar as CalendarIcon,
   Star,
   FileText,
   Package,
@@ -44,6 +44,19 @@ import { VehicleConfig, PickupPoint, AdditionalService, VehicleType, TransferSer
 import { packageService } from '@/lib/services/packageService';
 import CitySearchInput from './CitySearchInput';
 import ActivityPoliciesForm from '@/components/packages/forms/ActivityPoliciesForm';
+
+// Import Shadcn UI components
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input as ShadcnInput } from '@/components/ui/input';
+import { Textarea as ShadcnTextarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
 
 // Toast notification system
 const ToastContext = createContext<{
@@ -331,19 +344,19 @@ const PackageTypeSelector = ({ onSelect }: { onSelect: (type: PackageType) => vo
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-3 py-2">
       {/* Improved Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-12"
+        className="text-center mb-6"
       >
         <h1 className="text-3xl font-bold text-gray-900 mb-3">Create New Package</h1>
         <p className="text-gray-600 max-w-2xl mx-auto text-base">Choose the package type that best matches your travel offering</p>
       </motion.div>
       
       {/* Improved Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
         {packageTypes.map((pkg, index) => {
           const IconComponent = pkg.icon;
           const isSelected = selectedType === pkg.type;
@@ -367,10 +380,10 @@ const PackageTypeSelector = ({ onSelect }: { onSelect: (type: PackageType) => vo
               }`}
               onClick={() => handleSelect(pkg.type)}
             >
-              <div className="p-6">
+              <div className="p-3">
                 {/* Improved Icon and Title */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`inline-flex p-3 rounded-xl transition-all duration-200 ${
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`inline-flex p-2 rounded-xl transition-all duration-200 ${
                     isSelected ? getColorClasses(pkg.color, 'bg') : 'bg-gray-100 group-hover:' + getColorClasses(pkg.color, 'bg')
                   }`}>
                     <IconComponent className={`w-6 h-6 transition-colors duration-200 ${
@@ -751,7 +764,7 @@ const PricingSection = ({ pricing, onChange }: PricingSectionProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="font-semibold text-gray-900">Pricing Information</h4>
         <button
@@ -861,11 +874,11 @@ const TransferForm = ({ data, onChange, errors }: FormProps) => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-4"
       >
         <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 rounded-xl mb-4 border border-blue-200">
           <Car className="w-5 h-5 text-blue-600" />
@@ -879,21 +892,20 @@ const TransferForm = ({ data, onChange, errors }: FormProps) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl border border-gray-200 p-8 space-y-8 shadow-lg"
+        className="bg-white rounded-2xl border border-gray-200 p-8 space-y-4 shadow-lg"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <FormField 
-              label="Transfer Name" 
-              required
-              description="Give your transfer service a descriptive name"
-            >
-              <Input
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="transferName">Transfer Name *</Label>
+              <ShadcnInput
+                id="transferName"
                 placeholder="e.g., Airport to Hotel Transfer"
                 value={data.name || ''}
-                onChange={(value) => onChange({ name: value })}
+                onChange={(e) => onChange({ name: e.target.value })}
               />
-            </FormField>
+              <p className="text-sm text-gray-600">Give your transfer service a descriptive name</p>
+            </div>
 
             <CitySearchInput
               label="City/Place"
@@ -904,70 +916,64 @@ const TransferForm = ({ data, onChange, errors }: FormProps) => {
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField label="From" required>
-                <Input
+              <div className="space-y-2">
+                <Label htmlFor="from">From *</Label>
+                <ShadcnInput
+                  id="from"
                   placeholder="Starting location (e.g., Airport, Hotel, Station)"
                   value={data.from || ''}
-                  onChange={(value) => onChange({ from: value })}
+                  onChange={(e) => onChange({ from: e.target.value })}
                 />
-              </FormField>
-              <FormField label="To" required>
-                <Input
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="to">To *</Label>
+                <ShadcnInput
+                  id="to"
                   placeholder="Destination (e.g., Hotel, Airport, Station)"
                   value={data.to || ''}
-                  onChange={(value) => onChange({ to: value })}
+                  onChange={(e) => onChange({ to: e.target.value })}
                 />
-              </FormField>
+              </div>
             </div>
 
-            <FormField label="Transfer Type" required>
-              <div className="flex gap-6">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="transferType"
-                    value="ONEWAY"
-                    checked={data.transferType === 'ONEWAY'}
-                    onChange={(e) => onChange({ transferType: e.target.value as 'ONEWAY' | 'TWOWAY' })}
-                    className="text-blue-600"
-                  />
-                  <span className="text-sm font-medium text-gray-700">One Way</span>
-                </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="transferType"
-                    value="TWOWAY"
-                    checked={data.transferType === 'TWOWAY'}
-                    onChange={(e) => onChange({ transferType: e.target.value as 'ONEWAY' | 'TWOWAY' })}
-                    className="text-blue-600"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Two Way (Round Trip)</span>
-                </label>
-              </div>
-            </FormField>
+            <div className="space-y-2">
+              <Label>Transfer Type *</Label>
+              <RadioGroup 
+                value={data.transferType} 
+                onValueChange={(value) => onChange({ transferType: value as 'ONEWAY' | 'TWOWAY' })}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="ONEWAY" id="oneway" />
+                  <Label htmlFor="oneway">One Way</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="TWOWAY" id="twoway" />
+                  <Label htmlFor="twoway">Two Way (Round Trip)</Label>
+                </div>
+              </RadioGroup>
+            </div>
           </div>
 
-          <div className="space-y-6">
-            <FormField 
-              label="Service Description"
-              description="Describe what makes your transfer service special"
-            >
-              <Textarea
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="description">Service Description</Label>
+              <ShadcnTextarea
                 placeholder="Describe your transfer service, vehicle types, amenities, etc."
                 value={data.description || ''}
-                onChange={(value) => onChange({ description: value })}
+                onChange={(e) => onChange({ description: e.target.value })}
                 rows={6}
               />
-            </FormField>
+              <p className="text-sm text-gray-600">Describe what makes your transfer service special</p>
+            </div>
 
-            <FormField label="Transfer Image">
+            <div className="space-y-2">
+              <Label>Transfer Image</Label>
               <ImageUpload
                 onUpload={(file) => onChange({ image: file })}
                 preview={data.image}
                 label="Upload Transfer Image"
               />
-            </FormField>
+            </div>
           </div>
         </div>
 
@@ -1012,11 +1018,11 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-4"
       >
         <div className="inline-flex items-center gap-3 px-6 py-3 bg-emerald-50 rounded-xl mb-4 border border-emerald-200">
           <Star className="w-5 h-5 text-emerald-600" />
@@ -1035,18 +1041,19 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
       >
         <div className="flex space-x-2">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
+              variant={activeTab === tab.id ? "default" : "ghost"}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-2 transition-all duration-200 ${
                 activeTab === tab.id
-                  ? 'bg-emerald-50 text-emerald-600 font-medium border border-emerald-200'
+                  ? 'bg-emerald-50 text-emerald-600 font-medium border border-emerald-200 hover:bg-emerald-100'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
               <tab.icon className="w-4 h-4" />
               <span className="text-sm">{tab.label}</span>
-            </button>
+            </Button>
           ))}
         </div>
       </motion.div>
@@ -1065,10 +1072,10 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-8"
+              className="space-y-4"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <FormField 
                     label="Activity Name" 
                     required
@@ -1117,7 +1124,7 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <FormField 
                     label="Activity Description"
                     description="Describe what makes this experience special"
@@ -1135,7 +1142,7 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
               {/* Pricing Section */}
               <div className="border-t border-gray-200 pt-8">
                 <h3 className="text-lg font-semibold mb-6">Pricing</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField label="Adult Price" required>
                     <div className="relative">
                       <span className="absolute left-3 top-3 text-gray-500">$</span>
@@ -1185,7 +1192,7 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
+              className="space-y-4"
             >
               <ActivityDetailsForm
                 formData={{
@@ -1210,7 +1217,7 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
+              className="space-y-4"
             >
               <PackageVariantsForm
                 variants={data.variants || []}
@@ -1226,7 +1233,7 @@ const ActivityForm = ({ data, onChange }: FormProps) => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
+              className="space-y-4"
             >
               <ActivityPoliciesForm
                 formData={{
@@ -1266,19 +1273,12 @@ const MultiCityPackageForm = ({ data, onChange }: FormProps) => {
     onChange({ itinerary: updated });
   };
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: FileText },
-    { id: 'destinations', label: 'Destinations', icon: MapPin },
-    { id: 'itinerary', label: 'Itinerary', icon: Calendar },
-    { id: 'pricing', label: 'Pricing', icon: DollarSign }
-  ];
-
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-4"
       >
         <div className="inline-flex items-center gap-3 px-6 py-3 bg-purple-50 rounded-xl mb-4 border border-purple-200">
           <Package className="w-5 h-5 text-purple-600" />
@@ -1288,89 +1288,70 @@ const MultiCityPackageForm = ({ data, onChange }: FormProps) => {
         <p className="text-gray-600">Create your comprehensive tour package</p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
-      >
-        <div className="border-b border-gray-200 bg-gray-50">
-          <nav className="flex overflow-x-auto">
-            {tabs.map((tab) => {
-              const IconComponent = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-3 px-6 py-4 border-b-2 font-semibold text-sm transition-all duration-200 whitespace-nowrap ${
-                    isActive
-                      ? 'border-purple-500 text-purple-600 bg-purple-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <IconComponent className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="p-8">
-          <AnimatePresence mode="wait">
-            {activeTab === 'overview' && (
+      <Card>
+        <CardContent className="p-0">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="destinations">Destinations</TabsTrigger>
+              <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
+              <TabsTrigger value="pricing">Pricing</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="m-0">
               <motion.div
                 key="overview"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-8"
+                className="space-y-4 p-8"
               >
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <FormField 
-                      label="Package Title" 
-                      required
-                      description="Give your package an attractive title"
-                    >
-                      <Input
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="packageTitle">Package Title *</Label>
+                      <ShadcnInput
+                        id="packageTitle"
                         placeholder="e.g., Golden Triangle Tour"
                         value={data.title || ''}
-                        onChange={(value) => onChange({ title: value })}
+                        onChange={(e) => onChange({ title: e.target.value })}
                       />
-                    </FormField>
+                      <p className="text-sm text-gray-600">Give your package an attractive title</p>
+                    </div>
 
-                    <FormField 
-                      label="Package Description"
-                      description="Describe what makes this package special"
-                    >
-                      <Textarea
+                    <div className="space-y-2">
+                      <Label htmlFor="packageDescription">Package Description</Label>
+                      <ShadcnTextarea
+                        id="packageDescription"
                         placeholder="Describe your package, highlights, what travelers will experience..."
                         value={data.description || ''}
-                        onChange={(value) => onChange({ description: value })}
+                        onChange={(e) => onChange({ description: e.target.value })}
                         rows={6}
                       />
-                    </FormField>
+                      <p className="text-sm text-gray-600">Describe what makes this package special</p>
+                    </div>
 
-                    <FormField label="Additional Notes">
-                      <Textarea
+                    <div className="space-y-2">
+                      <Label htmlFor="additionalNotes">Additional Notes</Label>
+                      <ShadcnTextarea
+                        id="additionalNotes"
                         placeholder="Any additional information for travelers..."
                         value={data.additionalNotes || ''}
-                        onChange={(value) => onChange({ additionalNotes: value })}
+                        onChange={(e) => onChange({ additionalNotes: e.target.value })}
                         rows={4}
                       />
-                    </FormField>
+                    </div>
                   </div>
 
-                  <div className="space-y-6">
-                    <FormField label="Banner Image">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Banner Image</Label>
                       <ImageUpload
                         onUpload={(file) => onChange({ banner: file })}
                         preview={data.banner}
                         label="Upload Package Banner"
                       />
-                    </FormField>
+                    </div>
                   </div>
                 </div>
 
@@ -1390,17 +1371,17 @@ const MultiCityPackageForm = ({ data, onChange }: FormProps) => {
                   />
                 </div>
               </motion.div>
-            )}
+            </TabsContent>
 
-            {activeTab === 'destinations' && (
+            <TabsContent value="destinations" className="m-0">
               <motion.div
                 key="destinations"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4 p-8"
               >
-                <div className="text-center py-8">
+                <div className="text-center py-4">
                   <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Package Destinations</h3>
                   <p className="text-gray-600">Add all the destinations included in this package</p>
@@ -1413,28 +1394,29 @@ const MultiCityPackageForm = ({ data, onChange }: FormProps) => {
                   title="Destinations"
                 />
               </motion.div>
-            )}
+            </TabsContent>
 
-            {activeTab === 'itinerary' && (
+            <TabsContent value="itinerary" className="m-0">
               <motion.div
                 key="itinerary"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4 p-8"
               >
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900">Day-wise Itinerary</h3>
                     <p className="text-gray-600 mt-1">Plan each day of your package</p>
                   </div>
-                  <button
+                  <Button
+                    variant="default"
                     onClick={addItineraryDay}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors shadow-lg"
+                    className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
                   >
                     <Plus className="w-4 h-4" />
                     Add Day
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-4">
@@ -1511,17 +1493,17 @@ const MultiCityPackageForm = ({ data, onChange }: FormProps) => {
                   )}
                 </div>
               </motion.div>
-            )}
+            </TabsContent>
 
-            {activeTab === 'pricing' && (
+            <TabsContent value="pricing" className="m-0">
               <motion.div
                 key="pricing"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4 p-8"
               >
-                <div className="text-center py-8">
+                <div className="text-center py-4">
                   <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Package Pricing</h3>
                   <p className="text-gray-600">Set competitive prices for your package</p>
@@ -1532,10 +1514,10 @@ const MultiCityPackageForm = ({ data, onChange }: FormProps) => {
                   onChange={(pricing) => onChange({ pricing })}
                 />
               </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -1577,20 +1559,13 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
     onChange({ itinerary: updated });
   };
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: FileText },
-    { id: 'destinations', label: 'Destinations', icon: MapPin },
-    { id: 'itinerary', label: 'Itinerary', icon: Calendar },
-    { id: 'hotels', label: 'Hotels', icon: Bed },
-    { id: 'pricing', label: 'Pricing', icon: DollarSign }
-  ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-4"
       >
         <div className="inline-flex items-center gap-3 px-6 py-3 bg-orange-50 rounded-xl mb-4 border border-orange-200">
           <Building className="w-5 h-5 text-orange-600" />
@@ -1600,80 +1575,60 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
         <p className="text-gray-600">Create your complete package with accommodation</p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
-      >
-        <div className="border-b border-gray-200 bg-gray-50">
-          <nav className="flex overflow-x-auto">
-            {tabs.map((tab) => {
-              const IconComponent = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-3 px-6 py-4 border-b-2 font-semibold text-sm transition-all duration-200 whitespace-nowrap ${
-                    isActive
-                      ? 'border-orange-500 text-orange-600 bg-orange-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <IconComponent className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="p-8">
-          <AnimatePresence mode="wait">
-            {activeTab === 'overview' && (
+      <Card>
+        <CardContent className="p-0">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="destinations">Destinations</TabsTrigger>
+              <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
+              <TabsTrigger value="hotels">Hotels</TabsTrigger>
+              <TabsTrigger value="pricing">Pricing</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="m-0">
               <motion.div
                 key="overview"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-8"
+                className="space-y-4 p-8"
               >
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <FormField 
-                      label="Package Title" 
-                      required
-                      description="Give your complete package an attractive title"
-                    >
-                      <Input
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="packageTitle">Package Title *</Label>
+                      <ShadcnInput
+                        id="packageTitle"
                         placeholder="e.g., Golden Triangle Tour with Luxury Hotels"
                         value={data.title || ''}
-                        onChange={(value) => onChange({ title: value })}
+                        onChange={(e) => onChange({ title: e.target.value })}
                       />
-                    </FormField>
+                      <p className="text-sm text-gray-600">Give your complete package an attractive title</p>
+                    </div>
 
-                    <FormField 
-                      label="Package Description"
-                      description="Highlight accommodation and tour features"
-                    >
-                      <Textarea
+                    <div className="space-y-2">
+                      <Label htmlFor="packageDescription">Package Description</Label>
+                      <ShadcnTextarea
+                        id="packageDescription"
                         placeholder="Describe your complete package including hotels, activities, and experiences..."
                         value={data.description || ''}
-                        onChange={(value) => onChange({ description: value })}
+                        onChange={(e) => onChange({ description: e.target.value })}
                         rows={6}
                       />
-                    </FormField>
+                      <p className="text-sm text-gray-600">Highlight accommodation and tour features</p>
+                    </div>
                   </div>
 
-                  <div className="space-y-6">
-                    <FormField label="Package Banner">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Package Banner</Label>
                       <ImageUpload
                         onUpload={(file) => onChange({ banner: file })}
                         preview={data.banner}
                         label="Upload Package Banner"
                       />
-                    </FormField>
+                    </div>
                   </div>
                 </div>
 
@@ -1693,17 +1648,17 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
                   />
                 </div>
               </motion.div>
-            )}
+            </TabsContent>
 
-            {activeTab === 'destinations' && (
+            <TabsContent value="destinations" className="m-0">
               <motion.div
                 key="destinations"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4 p-8"
               >
-                <div className="text-center py-8">
+                <div className="text-center py-4">
                   <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Package Destinations</h3>
                   <p className="text-gray-600">Add all destinations with accommodation</p>
@@ -1716,28 +1671,29 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
                   title="Destinations"
                 />
               </motion.div>
-            )}
+            </TabsContent>
 
-            {activeTab === 'itinerary' && (
+            <TabsContent value="itinerary" className="m-0">
               <motion.div
                 key="itinerary"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4 p-8"
               >
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900">Day-wise Itinerary</h3>
                     <p className="text-gray-600 mt-1">Plan each day including accommodation</p>
                   </div>
-                  <button
+                  <Button
+                    variant="default"
                     onClick={addItineraryDay}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors shadow-lg"
+                    className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
                   >
                     <Plus className="w-4 h-4" />
                     Add Day
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-4">
@@ -1791,99 +1747,109 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
                   </AnimatePresence>
                 </div>
               </motion.div>
-            )}
+            </TabsContent>
 
-            {activeTab === 'hotels' && (
+            <TabsContent value="hotels" className="m-0">
               <motion.div
                 key="hotels"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4 p-8"
               >
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900">Hotel Details</h3>
                     <p className="text-gray-600 mt-1">Add accommodation details for each location</p>
                   </div>
-                  <button
+                  <Button
+                    variant="default"
                     onClick={addHotel}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors shadow-lg"
+                    className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
                   >
                     <Plus className="w-4 h-4" />
                     Add Hotel
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-4">
                   <AnimatePresence>
                     {(data.hotels || []).map((hotel, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-2xl p-6 space-y-4"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                              <Bed className="w-4 h-4" />
+                      <Card key={index} className="bg-orange-50 border-orange-200">
+                        <CardContent className="p-6 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                <Bed className="w-4 h-4" />
+                              </div>
+                              <h4 className="font-semibold text-gray-900">Hotel {index + 1}</h4>
                             </div>
-                            <h4 className="font-semibold text-gray-900">Hotel {index + 1}</h4>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const updated = (data.hotels || []).filter((_, i) => i !== index);
+                                onChange({ hotels: updated });
+                              }}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           </div>
-                          <button
-                            onClick={() => {
-                              const updated = (data.hotels || []).filter((_, i) => i !== index);
-                              onChange({ hotels: updated });
-                            }}
-                            className="text-red-500 hover:text-red-700 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField label="Hotel Name" required>
-                            <Input
-                              placeholder="e.g., Taj Palace Hotel"
-                              value={hotel.name}
-                              onChange={(value) => updateHotel(index, { name: value })}
-                            />
-                          </FormField>
-                          <FormField label="Location" required>
-                            <Input
-                              placeholder="e.g., New Delhi"
-                              value={hotel.location}
-                              onChange={(value) => updateHotel(index, { location: value })}
-                            />
-                          </FormField>
-                        </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor={`hotel-name-${index}`}>Hotel Name *</Label>
+                              <ShadcnInput
+                                id={`hotel-name-${index}`}
+                                placeholder="e.g., Taj Palace Hotel"
+                                value={hotel.name}
+                                onChange={(e) => updateHotel(index, { name: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`hotel-location-${index}`}>Location *</Label>
+                              <ShadcnInput
+                                id={`hotel-location-${index}`}
+                                placeholder="e.g., New Delhi"
+                                value={hotel.location}
+                                onChange={(e) => updateHotel(index, { location: e.target.value })}
+                              />
+                            </div>
+                          </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <FormField label="Check-in" required>
-                            <Input
-                              type="date"
-                              value={hotel.checkIn}
-                              onChange={(value) => updateHotel(index, { checkIn: value })}
-                            />
-                          </FormField>
-                          <FormField label="Check-out" required>
-                            <Input
-                              type="date"
-                              value={hotel.checkOut}
-                              onChange={(value) => updateHotel(index, { checkOut: value })}
-                            />
-                          </FormField>
-                          <FormField label="Room Type" required>
-                            <Input
-                              placeholder="e.g., Deluxe Room"
-                              value={hotel.roomType}
-                              onChange={(value) => updateHotel(index, { roomType: value })}
-                            />
-                          </FormField>
-                        </div>
-                      </motion.div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor={`checkin-${index}`}>Check-in Date *</Label>
+                              <ShadcnInput
+                                id={`checkin-${index}`}
+                                type="date"
+                                value={hotel.checkIn}
+                                onChange={(e) => updateHotel(index, { checkIn: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`checkout-${index}`}>Check-out Date *</Label>
+                              <ShadcnInput
+                                id={`checkout-${index}`}
+                                type="date"
+                                value={hotel.checkOut}
+                                onChange={(e) => updateHotel(index, { checkOut: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`room-type-${index}`}>Room Type *</Label>
+                              <ShadcnInput
+                                id={`room-type-${index}`}
+                                  placeholder="e.g., Deluxe Room"
+                                value={hotel.roomType}
+                                onChange={(e) => updateHotel(index, { roomType: e.target.value })}
+                              />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </AnimatePresence>
 
@@ -1895,17 +1861,17 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
                   )}
                 </div>
               </motion.div>
-            )}
+            </TabsContent>
 
-            {activeTab === 'pricing' && (
+            <TabsContent value="pricing" className="m-0">
               <motion.div
                 key="pricing"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4 p-8"
               >
-                <div className="text-center py-8">
+                <div className="text-center py-4">
                   <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Package Pricing (Including Hotels)</h3>
                   <p className="text-gray-600">Set pricing for your complete package with accommodation</p>
@@ -1916,16 +1882,51 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
                   onChange={(pricing) => onChange({ pricing })}
                 />
               </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
 const FixedDepartureForm = ({ data, onChange }: FormProps) => {
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeTab, setActiveTab] = useState<'info' | 'destinations' | 'itinerary' | 'pricing'>('info');
+  const [departureDates, setDepartureDates] = useState<Date[]>([
+    // Initialize with current date + 30 days if no existing dates
+    ...((data as any).departureDates?.map((d: any) => new Date(d)) || [new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)])
+  ]);
+
+  const addDepartureDate = () => {
+    const newDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    setDepartureDates([...departureDates, newDate]);
+    const updatedData = {
+      ...data,
+      departureDates: [...departureDates, newDate].map(d => d.toISOString())
+    } as any;
+    onChange(updatedData);
+  };
+
+  const updateDepartureDate = (index: number, date: Date) => {
+    const newDates = [...departureDates];
+    newDates[index] = date;
+    setDepartureDates(newDates);
+    const updatedData = {
+      ...data,
+      departureDates: newDates.map(d => d.toISOString())
+    } as any;
+    onChange(updatedData);
+  };
+
+  const removeDepartureDate = (index: number) => {
+    const newDates = departureDates.filter((_, i) => i !== index);
+    setDepartureDates(newDates);
+    const updatedData = {
+      ...data,
+      departureDates: newDates.map(d => d.toISOString())
+    } as any;
+    onChange(updatedData);
+  };
 
   const addDestination = () => {
     onChange({ destinations: [...(data.destinations || []), ''] });
@@ -1959,19 +1960,12 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
     onChange({ itinerary: updated });
   };
 
-  const steps = [
-    { title: 'Basic Info', icon: FileText },
-    { title: 'Destinations', icon: MapPin },
-    { title: 'Itinerary', icon: Calendar },
-    { title: 'Pricing', icon: DollarSign }
-  ];
-
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-4"
       >
         <div className="inline-flex items-center gap-3 px-6 py-3 bg-red-50 rounded-xl mb-4 border border-red-200">
           <Plane className="w-5 h-5 text-red-600" />
@@ -1981,116 +1975,168 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
         <p className="text-gray-600">Create your pre-scheduled group tour with fixed dates</p>
       </motion.div>
 
-      {/* Progress Steps */}
-      <div className="flex items-center justify-center mb-8">
-        <div className="flex items-center space-x-4">
-          {steps.map((step, index) => {
-            const IconComponent = step.icon;
-            const isActive = index === activeStep;
-            const isCompleted = index < activeStep;
-            
-            return (
-              <div key={index} className="flex items-center">
-                <button
-                  onClick={() => setActiveStep(index)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
-                    isActive
-                      ? 'bg-red-600 text-white shadow-lg'
-                      : isCompleted
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  <IconComponent className="w-4 h-4" />
-                  {step.title}
-                </button>
-                {index < steps.length - 1 && (
-                  <div className={`w-8 h-0.5 mx-2 transition-colors duration-300 ${
-                    index < activeStep ? 'bg-green-400' : 'bg-gray-300'
-                  }`} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="info">Basic Info</TabsTrigger>
+              <TabsTrigger value="destinations">Destinations</TabsTrigger>
+              <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
+              <TabsTrigger value="pricing">Pricing</TabsTrigger>
+            </TabsList>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl border border-gray-200 p-8 shadow-lg"
-      >
-        <AnimatePresence mode="wait">
-          {activeStep === 0 && (
-            <motion.div
-              key="basic"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-8"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <FormField 
-                    label="Package Title" 
-                    required
-                    description="Create an attractive title for your fixed departure"
-                  >
-                    <Input
+            
+            <TabsContent value="info" className="m-0">
+              <motion.div
+                key="info"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-4 p-8"
+              >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="packageTitle">Package Title *</Label>
+                    <ShadcnInput
+                      id="packageTitle"
                       placeholder="e.g., 15-Day Incredible India Tour"
                       value={data.title || ''}
-                      onChange={(value) => onChange({ title: value })}
+                      onChange={(e) => onChange({ title: e.target.value })}
                     />
-                  </FormField>
+                    <p className="text-sm text-gray-600">Create an attractive title for your fixed departure</p>
+                  </div>
 
-                  <FormField 
-                    label="Number of Days" 
-                    required
-                    description="How many days does this tour last?"
-                  >
-                    <Input
+                  <div className="space-y-2">
+                    <Label htmlFor="numberOfDays">Number of Days *</Label>
+                    <ShadcnInput
+                      id="numberOfDays"
                       type="number"
                       placeholder="15"
                       value={data.days?.toString() || ''}
-                      onChange={(value) => onChange({ days: parseInt(value) || 0 })}
+                      onChange={(e) => onChange({ days: parseInt(e.target.value) || 0 })}
                     />
-                  </FormField>
+                    <p className="text-sm text-gray-600">How many days does this tour last?</p>
+                  </div>
 
-                  <FormField 
-                    label="Package Description"
-                    description="Describe what makes this departure special"
-                  >
-                    <Textarea
+                  <div className="space-y-2">
+                    <Label htmlFor="packageDescription">Package Description</Label>
+                    <ShadcnTextarea
+                      id="packageDescription"
                       placeholder="Describe your fixed departure package, highlights, group size, etc..."
                       value={data.description || ''}
-                      onChange={(value) => onChange({ description: value })}
+                      onChange={(e) => onChange({ description: e.target.value })}
                       rows={6}
                     />
-                  </FormField>
+                    <p className="text-sm text-gray-600">Describe what makes this departure special</p>
+                  </div>
                 </div>
 
-                <div className="space-y-6">
-                  <FormField label="Package Image">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Package Image</Label>
                     <ImageUpload
                       onUpload={(file) => onChange({ image: file })}
                       preview={data.image}
                       label="Upload Package Image"
                     />
-                  </FormField>
+                  </div>
+                </div>
+
+                {/* Departure Dates Section */}
+                <div className="pt-8 border-t border-gray-200">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle>Departure Dates</CardTitle>
+                          <p className="text-sm text-gray-600 mt-1">Set the specific dates when your fixed departure tours will run</p>
+                        </div>
+                        <Button
+                          variant="default"
+                          onClick={addDepartureDate}
+                          className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Date
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {departureDates.map((date, index) => (
+                        <Card key={index} className="bg-red-50 border-red-200">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-bold">
+                                  {index + 1}
+                                </div>
+                                <span className="font-medium text-gray-900">
+                                  Departure Date {index + 1}
+                                </span>
+                              </div>
+                              {departureDates.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeDepartureDate(index)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                            <div className="mt-4">
+                              <Label htmlFor={`departure-date-${index}`}>Select Departure Date</Label>
+                              <div className="mt-2">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                      <CalendarIcon className="mr-2 h-4 w-4" />
+                                      {date ? format(date, "PPP") : "Pick a date"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                      mode="single"
+                                      selected={date}
+                                      onSelect={(selectedDate) => {
+                                        if (selectedDate) {
+                                          updateDepartureDate(index, selectedDate);
+                                        }
+                                      }}
+                                      initialFocus
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                      
+                      {departureDates.length === 0 && (
+                        <div className="text-center py-4 text-gray-500">
+                          <CalendarIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <p>No departure dates added yet. Click "Add Date" to set tour dates.</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
-            </motion.div>
-          )}
+              </motion.div>
+            </TabsContent>
 
-          {activeStep === 1 && (
-            <motion.div
-              key="destinations"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-8"
-            >
+            <TabsContent value="destinations" className="m-0">
+              <motion.div
+                key="destinations"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-4 p-8"
+              >
               <div className="text-center py-8">
                 <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Tour Destinations</h3>
@@ -2100,13 +2146,14 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h4 className="font-semibold text-gray-900">Destinations List</h4>
-                  <button
+                  <Button
+                    variant="default"
                     onClick={addDestination}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700"
                   >
                     <Plus className="w-4 h-4" />
                     Add Destination
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-3">
@@ -2122,101 +2169,108 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
                         <div className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                           {index + 1}
                         </div>
-                        <Input
+                        <ShadcnInput
                           placeholder="Enter destination name"
                           value={destination}
-                          onChange={(value) => updateDestination(index, value)}
+                          onChange={(e) => updateDestination(index, e.target.value)}
                         />
-                        <button
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => removeDestination(index)}
-                          className="px-3 py-2 text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
+                          className="text-red-500 hover:text-red-700 flex-shrink-0"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </motion.div>
                     ))}
                   </AnimatePresence>
 
                   {(!data.destinations || data.destinations.length === 0) && (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-4 text-gray-500">
                       <MapPin className="w-12 h-12 mx-auto mb-4 opacity-50" />
                       <p>No destinations added yet. Click "Add Destination" to start.</p>
                     </div>
                   )}
                 </div>
               </div>
-            </motion.div>
-          )}
+              </motion.div>
+            </TabsContent>
 
-          {activeStep === 2 && (
-            <motion.div
-              key="itinerary"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-8"
-            >
+            <TabsContent value="itinerary" className="m-0">
+              <motion.div
+                key="itinerary"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-4 p-8"
+              >
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">Day-wise Itinerary</h3>
                   <p className="text-gray-600 mt-1">Plan each day of your fixed departure</p>
                 </div>
-                <button
+                <Button
+                  variant="default"
                   onClick={addItineraryDay}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors shadow-lg"
+                  className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700"
                 >
                   <Plus className="w-4 h-4" />
                   Add Day
-                </button>
+                </Button>
               </div>
 
               <div className="space-y-4">
                 <AnimatePresence>
                   {(data.itinerary || []).map((day, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-2xl p-6 space-y-4"
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                            {day.day}
+                    <Card key={index} className="bg-red-50 border-red-200">
+                      <CardContent className="p-6 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                              {day.day}
+                            </div>
+                            <h4 className="font-semibold text-gray-900">Day {day.day}</h4>
                           </div>
-                          <h4 className="font-semibold text-gray-900">Day {day.day}</h4>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const updated = (data.itinerary || []).filter((_, i) => i !== index);
+                              onChange({ itinerary: updated });
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
-                        <button
-                          onClick={() => {
-                            const updated = (data.itinerary || []).filter((_, i) => i !== index);
-                            onChange({ itinerary: updated });
-                          }}
-                          className="text-red-500 hover:text-red-700 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
 
-                      <div className="space-y-4">
-                        <FormField label="Day Summary">
-                          <Input
-                            placeholder="e.g., Arrival in Delhi - City Tour"
-                            value={day.title}
-                            onChange={(value) => updateItineraryDay(index, { title: value })}
-                          />
-                        </FormField>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor={`day-title-${index}`}>Day Summary</Label>
+                            <ShadcnInput
+                              id={`day-title-${index}`}
+                              placeholder="e.g., Arrival in Delhi - City Tour"
+                              value={day.title}
+                              onChange={(e) => updateItineraryDay(index, { title: e.target.value })}
+                            />
+                          </div>
 
-                        <FormField label="Day Details">
-                          <Textarea
-                            placeholder="Describe the day's activities, meals, accommodation, etc..."
-                            value={day.description}
-                            onChange={(value) => updateItineraryDay(index, { description: value })}
-                            rows={4}
-                          />
-                        </FormField>
-                      </div>
-                    </motion.div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`day-description-${index}`}>Day Details</Label>
+                            <ShadcnTextarea
+                              id={`day-description-${index}`}
+                              placeholder="Describe the day's activities, meals, accommodation, etc..."
+                              value={day.description}
+                              onChange={(e) => updateItineraryDay(index, { description: e.target.value })}
+                              rows={4}
+                            />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </AnimatePresence>
 
@@ -2227,17 +2281,17 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
                   </div>
                 )}
               </div>
-            </motion.div>
-          )}
+              </motion.div>
+            </TabsContent>
 
-          {activeStep === 3 && (
-            <motion.div
-              key="pricing"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-8"
-            >
+            <TabsContent value="pricing" className="m-0">
+              <motion.div
+                key="pricing"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-4 p-8"
+              >
               <div className="text-center py-8">
                 <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Fixed Departure Pricing</h3>
@@ -2248,42 +2302,11 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
                 pricing={data.pricing || [{ adultPrice: 0, childPrice: 0, validFrom: '', validTo: '' }]}
                 onChange={(pricing) => onChange({ pricing })}
               />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Navigation */}
-        <div className="flex justify-between items-center pt-8 mt-8 border-t border-gray-200">
-          <button
-            onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
-            disabled={activeStep === 0}
-            className="inline-flex items-center gap-2 px-6 py-3 text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Previous
-          </button>
-
-          <div className="flex items-center gap-2">
-            {steps.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                  index === activeStep ? 'bg-red-600' : index < activeStep ? 'bg-green-400' : 'bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={() => setActiveStep(Math.min(steps.length - 1, activeStep + 1))}
-            disabled={activeStep === steps.length - 1}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Next
-            <ArrowLeft className="w-4 h-4 rotate-180" />
-          </button>
-        </div>
-      </motion.div>
+              </motion.div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -2722,12 +2745,6 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-50/30 to-purple-50/20" />
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-blue-100/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-purple-100/20 rounded-full blur-3xl" />
-      </div>
         <AnimatePresence mode="wait">
           {step === 'type' && (
             <motion.div
@@ -2736,7 +2753,7 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="py-8 relative z-10"
+              className="py-4 relative z-10"
             >
               <PackageTypeSelector onSelect={handleTypeSelect} />
             </motion.div>
@@ -2749,16 +2766,17 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="py-8 relative z-10"
+              className="py-4 relative z-10"
             >
               <div className="max-w-7xl mx-auto px-6 relative z-10">
                 {/* Improved Header */}
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between mb-8"
+                  className="flex items-center justify-between mb-4"
                 >
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={() => {
                       if (onCancel) {
                         onCancel();
@@ -2767,13 +2785,13 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
                         addToast('Returning to package selection', 'info');
                       }
                     }}
-                    className="group flex items-center gap-2 px-4 py-2 text-gray-600 bg-white rounded-lg hover:text-gray-900 transition-all duration-200 border border-gray-200 shadow-sm hover:shadow-md"
+                    className="group flex items-center gap-2"
                   >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
                     <span className="font-medium text-sm">Back</span>
-                  </button>
+                  </Button>
                   
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4">
                     <AnimatePresence>
                       {Object.keys(errors).length > 0 && (
                         <motion.div 
@@ -2790,7 +2808,8 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
                     
                     <div className="flex gap-3">
                       {/* Save Draft Button */}
-                      <button
+                      <Button
+                        variant="outline"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -2801,7 +2820,7 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
                           handleSave('DRAFT');
                         }}
                         disabled={isSaving}
-                        className="relative flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="relative flex items-center gap-2"
                       >
                         {isSaving ? (
                           <>
@@ -2814,10 +2833,11 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
                             <span className="font-medium">Save Draft</span>
                           </>
                         )}
-                      </button>
+                      </Button>
 
                       {/* Submit/Publish Button */}
-                      <button
+                      <Button
+                        variant="default"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -2828,7 +2848,7 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
                           handleSave('ACTIVE');
                         }}
                         disabled={isSaving}
-                        className="relative flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="relative flex items-center gap-2"
                       >
                         {isSaving ? (
                           <>
@@ -2841,7 +2861,7 @@ function CompactPackageWizardContent({ onSuccess, onCancel }: CompactPackageWiza
                             <span className="font-medium">Submit & Publish</span>
                           </>
                         )}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </motion.div>
@@ -2950,179 +2970,162 @@ const VehicleConfigurationSection = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-      className="bg-white rounded-2xl border border-gray-200 p-6 space-y-6 shadow-lg"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Vehicle Configurations</h3>
-          <p className="text-sm text-gray-600">Add different vehicle options for your transfer service</p>
-        </div>
-        <button
-          type="button"
-          onClick={addVehicleConfig}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
-        >
-          <Plus className="w-4 h-4" />
-          Add Vehicle
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {vehicleConfigs.map((config, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-50 border border-gray-200 rounded-xl p-6 space-y-6"
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Vehicle Configurations</CardTitle>
+            <p className="text-sm text-gray-600">Add different vehicle options for your transfer service</p>
+          </div>
+          <Button
+            type="button"
+            variant="default"
+            onClick={addVehicleConfig}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
           >
+            <Plus className="w-4 h-4" />
+            Add Vehicle
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+
+        {vehicleConfigs.map((config, index) => (
+          <Card key={index} className="bg-gray-50">
+            <CardContent className="p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="font-medium text-gray-900">Vehicle {index + 1}</h4>
               {vehicleConfigs.length > 1 && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => removeVehicleConfig(index)}
-                  className="text-red-500 hover:text-red-700 transition-colors"
+                  className="text-red-500 hover:text-red-700"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               )}
             </div>
 
             {/* Main vehicle details in a clean grid layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Vehicle Type */}
-              <div>
-                <FormField label="Vehicle Type" required>
-                  <div className="space-y-2">
-                    <Select
-                      value={config.vehicleType}
-                      onChange={(value) => handleVehicleTypeChange(index, value)}
-                      options={vehicleTypeOptions}
-                      placeholder="Select type"
-                    />
-                    {showCustomInputs[index] && (
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Enter custom type"
-                          value={customVehicleTypes[index] || ''}
-                          onChange={(value) => setCustomVehicleTypes(prev => ({ ...prev, [index]: value }))}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleCustomVehicleType(index)}
-                          className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                          <Check className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </FormField>
+              <div className="space-y-2">
+                <Label>Vehicle Type *</Label>
+                <div className="space-y-2">
+                  <Select
+                    value={config.vehicleType}
+                    onChange={(value) => handleVehicleTypeChange(index, value)}
+                    options={vehicleTypeOptions}
+                    placeholder="Select type"
+                  />
+                  {showCustomInputs[index] && (
+                    <div className="flex gap-2">
+                      <ShadcnInput
+                        placeholder="Enter custom type"
+                        value={customVehicleTypes[index] || ''}
+                        onChange={(e) => setCustomVehicleTypes(prev => ({ ...prev, [index]: e.target.value }))}
+                      />
+                      <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleCustomVehicleType(index)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Check className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Service Name */}
-              <div>
-                <FormField label="Service Name" required>
-                  <Input
-                    placeholder="e.g., Economy Sedan Transfer"
-                    value={config.name}
-                    onChange={(value) => updateVehicleConfig(index, 'name', value)}
-                  />
-                </FormField>
+              <div className="space-y-2">
+                <Label>Service Name *</Label>
+                <ShadcnInput
+                  placeholder="e.g., Economy Sedan Transfer"
+                  value={config.name}
+                  onChange={(e) => updateVehicleConfig(index, 'name', e.target.value)}
+                />
               </div>
 
               {/* Passenger Capacity */}
-              <div>
-                <FormField label="Passenger Capacity" required>
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      min="1"
-                      max="50"
-                      placeholder="Min"
-                      value={config.minPassengers.toString()}
-                      onChange={(value) => updateVehicleConfig(index, 'minPassengers', parseInt(value) || 1)}
-                      className="text-center"
-                    />
-                    <span className="flex items-center text-gray-500 font-medium">to</span>
-                    <Input
-                      type="number"
-                      min={config.minPassengers}
-                      max="50"
-                      placeholder="Max"
-                      value={config.maxPassengers.toString()}
-                      onChange={(value) => updateVehicleConfig(index, 'maxPassengers', parseInt(value) || config.minPassengers)}
-                      className="text-center"
-                    />
-                  </div>
-                </FormField>
+              <div className="space-y-2">
+                <Label>Passenger Capacity *</Label>
+                <div className="flex gap-2">
+                  <ShadcnInput
+                    type="number"
+                    min="1"
+                    max="50"
+                    placeholder="Min"
+                    value={config.minPassengers.toString()}
+                    onChange={(e) => updateVehicleConfig(index, 'minPassengers', parseInt(e.target.value) || 1)}
+                    className="text-center"
+                  />
+                  <span className="flex items-center text-gray-500 font-medium">to</span>
+                  <ShadcnInput
+                    type="number"
+                    min={config.minPassengers}
+                    max="50"
+                    placeholder="Max"
+                    value={config.maxPassengers.toString()}
+                    onChange={(e) => updateVehicleConfig(index, 'maxPassengers', parseInt(e.target.value) || config.minPassengers)}
+                    className="text-center"
+                  />
+                </div>
               </div>
 
               {/* Base Price */}
-              <div>
-                <FormField label="Base Price (₹)" required>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={config.basePrice.toString()}
-                    onChange={(value) => updateVehicleConfig(index, 'basePrice', parseFloat(value) || 0)}
-                  />
-                </FormField>
+              <div className="space-y-2">
+                <Label>Base Price (₹) *</Label>
+                <ShadcnInput
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={config.basePrice.toString()}
+                  onChange={(e) => updateVehicleConfig(index, 'basePrice', parseFloat(e.target.value) || 0)}
+                />
               </div>
 
               {/* Per KM Rate */}
-              <div>
-                <FormField label="Per KM Rate (₹)" description="Optional">
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={config.perKmRate?.toString() || ''}
-                    onChange={(value) => updateVehicleConfig(index, 'perKmRate', value ? parseFloat(value) : undefined)}
-                  />
-                </FormField>
+              <div className="space-y-2">
+                <Label>Per KM Rate (₹)</Label>
+                <ShadcnInput
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={config.perKmRate?.toString() || ''}
+                  onChange={(e) => updateVehicleConfig(index, 'perKmRate', e.target.value ? parseFloat(e.target.value) : undefined)}
+                />
+                <p className="text-sm text-gray-600">Optional</p>
               </div>
 
               {/* Transfer Type for this vehicle */}
-              <div>
-                <FormField label="Transfer Type" required>
-                  <div className="flex gap-4">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name={`transferType-${index}`}
-                        value="ONEWAY"
-                        checked={config.transferType === 'ONEWAY'}
-                        onChange={(e) => updateVehicleConfig(index, 'transferType', e.target.value)}
-                        className="text-blue-600"
-                      />
-                      <span className="text-sm font-medium text-gray-700">One Way</span>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name={`transferType-${index}`}
-                        value="TWOWAY"
-                        checked={config.transferType === 'TWOWAY'}
-                        onChange={(e) => updateVehicleConfig(index, 'transferType', e.target.value)}
-                        className="text-blue-600"
-                      />
-                      <span className="text-sm font-medium text-gray-700">Two Way</span>
-                    </label>
+              <div className="space-y-2">
+                <Label>Transfer Type *</Label>
+                <RadioGroup 
+                  value={config.transferType} 
+                  onValueChange={(value) => updateVehicleConfig(index, 'transferType', value)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="ONEWAY" id={`oneway-${index}`} />
+                    <Label htmlFor={`oneway-${index}`}>One Way</Label>
                   </div>
-                </FormField>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="TWOWAY" id={`twoway-${index}`} />
+                    <Label htmlFor={`twoway-${index}`}>Two Way</Label>
+                  </div>
+                </RadioGroup>
               </div>
             </div>
 
             {/* Features */}
-            <FormField label="Vehicle Features">
+            <div className="space-y-2">
+              <Label>Vehicle Features</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {availableFeatures.map((feature) => (
                   <label
@@ -3140,29 +3143,31 @@ const VehicleConfigurationSection = ({
                   </label>
                 ))}
               </div>
-            </FormField>
+            </div>
 
             {/* Description */}
-            <FormField label="Description">
-              <Textarea
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <ShadcnTextarea
                 placeholder="Describe this vehicle option..."
                 value={config.description || ''}
-                onChange={(value) => updateVehicleConfig(index, 'description', value)}
+                onChange={(e) => updateVehicleConfig(index, 'description', e.target.value)}
                 rows={2}
               />
-            </FormField>
-          </motion.div>
+            </div>
+            </CardContent>
+          </Card>
         ))}
 
         {vehicleConfigs.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-4 text-gray-500">
             <Car className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>No vehicle configurations added yet</p>
             <p className="text-sm">Click "Add Vehicle" to get started</p>
           </div>
         )}
-      </div>
-    </motion.div>
+      </CardContent>
+    </Card>
   );
 };
 

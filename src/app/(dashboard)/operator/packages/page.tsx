@@ -259,7 +259,14 @@ export default function OperatorPackagesPage() {
                 <Button 
                   size="sm" 
                   className="bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200"
-                  style={{ color: 'white', backgroundColor: '#2563eb' }}
+                  style={{ 
+                    color: 'white', 
+                    backgroundColor: '#2563eb',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
                 >
                   <Plus className="w-4 h-4" style={{ color: 'white' }} />
                   Create Package
@@ -351,7 +358,14 @@ export default function OperatorPackagesPage() {
                   <Button 
                     size="lg"
                     className="bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200"
-                    style={{ color: 'white', backgroundColor: '#2563eb' }}
+                    style={{ 
+                      color: 'white', 
+                      backgroundColor: '#2563eb',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
                   >
                     <Plus className="w-4 h-4" style={{ color: 'white' }} />
                     Create Package

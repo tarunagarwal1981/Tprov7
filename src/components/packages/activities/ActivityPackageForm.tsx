@@ -3,12 +3,29 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Clock, Users, DollarSign, Upload, X, Plus, Calendar, Star, Shield } from 'lucide-react';
-import { FormField } from '@/components/packages/forms/FormField';
-import { Input } from '@/components/packages/forms/Input';
-import { Textarea } from '@/components/packages/forms/Textarea';
-import { Select } from '@/components/packages/forms/Select';
 import CitySearchInput from '@/components/packages/create/CitySearchInput';
 import { ImageUpload } from '@/components/packages/forms/ImageUpload';
+
+// Import Shadcn UI components
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormControl, 
+  FormMessage, 
+  FormDescription 
+} from '@/components/ui/form';
 
 export interface ActivityFormData {
   // Basic Info
@@ -127,34 +144,44 @@ export function ActivityPackageForm({
   ];
 
   const renderBasicInfo = () => (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <FormField 
-            label="Activity Name" 
-            required
-            description="Give your activity a descriptive name"
-            error={errors.name}
-          >
-            <Input
-              placeholder="e.g., Hot Air Balloon Ride"
-              value={data.name || ''}
-              onChange={(value) => onChange({ name: value })}
-            />
-          </FormField>
+        <div className="space-y-4">
+          <FormField
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Activity Name *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g., Hot Air Balloon Ride"
+                    value={data.name || ''}
+                    onChange={(e) => onChange({ name: e.target.value })}
+                  />
+                </FormControl>
+                <FormDescription>Give your activity a descriptive name</FormDescription>
+                {errors.name && <FormMessage>{errors.name}</FormMessage>}
+              </FormItem>
+            )}
+          />
 
-          <FormField 
-            label="Activity Title" 
-            required
-            description="A shorter title for display"
-            error={errors.title}
-          >
-            <Input
-              placeholder="e.g., Premium Balloon Experience"
-              value={data.title || ''}
-              onChange={(value) => onChange({ title: value })}
-            />
-          </FormField>
+          <FormField
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Activity Title *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g., Premium Balloon Experience"
+                    value={data.title || ''}
+                    onChange={(e) => onChange({ title: e.target.value })}
+                  />
+                </FormControl>
+                <FormDescription>A shorter title for display</FormDescription>
+                {errors.title && <FormMessage>{errors.title}</FormMessage>}
+              </FormItem>
+            )}
+          />
 
           <CitySearchInput
             label="Location"
@@ -162,253 +189,378 @@ export function ActivityPackageForm({
             value={data.place || ''}
             onChange={(value) => onChange({ place: value })}
             placeholder="Search for a city..."
-            error={errors.place}
           />
 
-          <FormField label="Activity Category" required>
-            <Select
-              value={data.activityCategory || ''}
-              onChange={(value) => onChange({ activityCategory: value })}
-              options={activityCategories}
-              placeholder="Select activity category"
-            />
-          </FormField>
+          <FormField
+            name="activityCategory"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Activity Category *</FormLabel>
+                <FormControl>
+                  <Select
+                    value={data.activityCategory || ''}
+                    onValueChange={(value) => onChange({ activityCategory: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select activity category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activityCategories.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Duration (hours)" required error={errors.durationHours}>
-              <Input
-                type="number"
-                placeholder="2"
-                value={data.durationHours?.toString() || ''}
-                onChange={(value) => onChange({ durationHours: parseInt(value) || 0 })}
-              />
-            </FormField>
-            <FormField label="Max Capacity" error={errors.maxCapacity}>
-              <Input
-                type="number"
-                placeholder="20"
-                value={data.maxCapacity?.toString() || ''}
-                onChange={(value) => onChange({ maxCapacity: parseInt(value) || 0 })}
-              />
-            </FormField>
+            <FormField
+              name="durationHours"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration (hours) *</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="2"
+                      value={data.durationHours?.toString() || ''}
+                      onChange={(e) => onChange({ durationHours: parseInt(e.target.value) || 0 })}
+                    />
+                  </FormControl>
+                  {errors.durationHours && <FormMessage>{errors.durationHours}</FormMessage>}
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="maxCapacity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Capacity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="20"
+                      value={data.maxCapacity?.toString() || ''}
+                      onChange={(e) => onChange({ maxCapacity: parseInt(e.target.value) || 0 })}
+                    />
+                  </FormControl>
+                  {errors.maxCapacity && <FormMessage>{errors.maxCapacity}</FormMessage>}
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 
-        <div className="space-y-6">
-          <FormField 
-            label="Activity Description"
-            description="Describe what makes your activity special"
-            error={errors.description}
-          >
-            <Textarea
-              placeholder="Describe your activity, what participants will experience, highlights, etc."
-              value={data.description || ''}
-              onChange={(value) => onChange({ description: value })}
-              rows={6}
-            />
-          </FormField>
+        <div className="space-y-4">
+          <FormField
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Activity Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Describe your activity, what participants will experience, highlights, etc."
+                    value={data.description || ''}
+                    onChange={(e) => onChange({ description: e.target.value })}
+                    rows={6}
+                  />
+                </FormControl>
+                <FormDescription>Describe what makes your activity special</FormDescription>
+                {errors.description && <FormMessage>{errors.description}</FormMessage>}
+              </FormItem>
+            )}
+          />
 
-          <FormField label="Activity Image">
-            <ImageUpload
-              onUpload={(file) => onChange({ image: file })}
-              preview={data.image}
-              label="Upload Activity Image"
-            />
-          </FormField>
+          <FormField
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Activity Image</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    onUpload={(file) => onChange({ image: file })}
+                    preview={data.image}
+                    label="Upload Activity Image"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
       </div>
     </div>
   );
 
   const renderActivityDetails = () => (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <FormField label="Timing" required>
-            <Input
-              placeholder="e.g., Morning 6:00 AM - 10:00 AM"
-              value={data.timing || ''}
-              onChange={(value) => onChange({ timing: value })}
-            />
-          </FormField>
-
-          <FormField label="Meeting Point" required>
-            <Input
-              placeholder="e.g., Hotel lobby, Activity center"
-              value={data.meetingPoint || ''}
-              onChange={(value) => onChange({ meetingPoint: value })}
-            />
-          </FormField>
-
-          <FormField label="Available Days">
-            <div className="grid grid-cols-2 gap-3">
-              {daysOfWeek.map((day) => (
-                <label key={day.value} className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={data.availableDays?.includes(day.value) || false}
-                    onChange={(e) => {
-                      const currentDays = data.availableDays || [];
-                      if (e.target.checked) {
-                        onChange({ availableDays: [...currentDays, day.value] });
-                      } else {
-                        onChange({ availableDays: currentDays.filter(d => d !== day.value) });
-                      }
-                    }}
-                    className="text-green-600"
+        <div className="space-y-4">
+          <FormField
+            name="timing"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Timing *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g., Morning 6:00 AM - 10:00 AM"
+                    value={data.timing || ''}
+                    onChange={(e) => onChange({ timing: e.target.value })}
                   />
-                  <span className="text-sm text-gray-700">{day.label}</span>
-                </label>
-              ))}
-            </div>
-          </FormField>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormField label="Languages Supported">
-            <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto">
-              {languages.map((lang) => (
-                <label key={lang.value} className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={data.languagesSupported?.includes(lang.value) || false}
-                    onChange={(e) => {
-                      const currentLangs = data.languagesSupported || [];
-                      if (e.target.checked) {
-                        onChange({ languagesSupported: [...currentLangs, lang.value] });
-                      } else {
-                        onChange({ languagesSupported: currentLangs.filter(l => l !== lang.value) });
-                      }
-                    }}
-                    className="text-green-600"
+          <FormField
+            name="meetingPoint"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Meeting Point *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g., Hotel lobby, Activity center"
+                    value={data.meetingPoint || ''}
+                    onChange={(e) => onChange({ meetingPoint: e.target.value })}
                   />
-                  <span className="text-sm text-gray-700">{lang.label}</span>
-                </label>
-              ))}
-            </div>
-          </FormField>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="availableDays"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Available Days</FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-2 gap-3">
+                    {daysOfWeek.map((day) => (
+                      <label key={day.value} className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={data.availableDays?.includes(day.value) || false}
+                          onChange={(e) => {
+                            const currentDays = data.availableDays || [];
+                            if (e.target.checked) {
+                              onChange({ availableDays: [...currentDays, day.value] });
+                            } else {
+                              onChange({ availableDays: currentDays.filter(d => d !== day.value) });
+                            }
+                          }}
+                          className="text-green-600"
+                        />
+                        <span className="text-sm text-gray-700">{day.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="languagesSupported"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Languages Supported</FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto">
+                    {languages.map((lang) => (
+                      <label key={lang.value} className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={data.languagesSupported?.includes(lang.value) || false}
+                          onChange={(e) => {
+                            const currentLangs = data.languagesSupported || [];
+                            if (e.target.checked) {
+                              onChange({ languagesSupported: [...currentLangs, lang.value] });
+                            } else {
+                              onChange({ languagesSupported: currentLangs.filter(l => l !== lang.value) });
+                            }
+                          }}
+                          className="text-green-600"
+                        />
+                        <span className="text-sm text-gray-700">{lang.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        <div className="space-y-6">
-          <FormField label="Operational Hours">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                type="time"
-                placeholder="Start time"
-                value={data.operationalHours?.start || ''}
-                onChange={(value) => onChange({ 
-                  operationalHours: { 
-                    ...data.operationalHours, 
-                    start: value 
-                  } 
-                })}
-              />
-              <Input
-                type="time"
-                placeholder="End time"
-                value={data.operationalHours?.end || ''}
-                onChange={(value) => onChange({ 
-                  operationalHours: { 
-                    ...data.operationalHours, 
-                    end: value 
-                  } 
-                })}
-              />
-            </div>
-          </FormField>
+        <div className="space-y-4">
+          <FormField
+            name="operationalHours"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Operational Hours</FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      type="time"
+                      placeholder="Start time"
+                      value={data.operationalHours?.start || ''}
+                      onChange={(e) => onChange({ 
+                        operationalHours: { 
+                          start: e.target.value,
+                          end: data.operationalHours?.end || ''
+                        } 
+                      })}
+                    />
+                    <Input
+                      type="time"
+                      placeholder="End time"
+                      value={data.operationalHours?.end || ''}
+                      onChange={(e) => onChange({ 
+                        operationalHours: { 
+                          start: data.operationalHours?.start || '',
+                          end: e.target.value
+                        } 
+                      })}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormField label="Emergency Contact">
-            <div className="space-y-3">
-              <Input
-                placeholder="Contact name"
-                value={data.emergencyContact?.name || ''}
-                onChange={(value) => onChange({ 
-                  emergencyContact: { 
-                    ...data.emergencyContact, 
-                    name: value 
-                  } 
-                })}
-              />
-              <Input
-                placeholder="Phone number"
-                value={data.emergencyContact?.phone || ''}
-                onChange={(value) => onChange({ 
-                  emergencyContact: { 
-                    ...data.emergencyContact, 
-                    phone: value 
-                  } 
-                })}
-              />
-              <Input
-                type="email"
-                placeholder="Email"
-                value={data.emergencyContact?.email || ''}
-                onChange={(value) => onChange({ 
-                  emergencyContact: { 
-                    ...data.emergencyContact, 
-                    email: value 
-                  } 
-                })}
-              />
-            </div>
-          </FormField>
+          <FormField
+            name="emergencyContact"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Emergency Contact</FormLabel>
+                <FormControl>
+                  <div className="space-y-3">
+                    <Input
+                      placeholder="Contact name"
+                      value={data.emergencyContact?.name || ''}
+                      onChange={(e) => onChange({ 
+                        emergencyContact: { 
+                          name: e.target.value,
+                          phone: data.emergencyContact?.phone || '',
+                          email: data.emergencyContact?.email || ''
+                        } 
+                      })}
+                    />
+                    <Input
+                      placeholder="Phone number"
+                      value={data.emergencyContact?.phone || ''}
+                      onChange={(e) => onChange({ 
+                        emergencyContact: { 
+                          name: data.emergencyContact?.name || '',
+                          phone: e.target.value,
+                          email: data.emergencyContact?.email || ''
+                        } 
+                      })}
+                    />
+                    <Input
+                      type="email"
+                      placeholder="Email"
+                      value={data.emergencyContact?.email || ''}
+                      onChange={(e) => onChange({ 
+                        emergencyContact: { 
+                          name: data.emergencyContact?.name || '',
+                          phone: data.emergencyContact?.phone || '',
+                          email: e.target.value
+                        } 
+                      })}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormField label="Age Restrictions">
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  type="number"
-                  placeholder="Min age"
-                  value={data.ageRestrictionsDetailed?.minAge?.toString() || ''}
-                  onChange={(value) => onChange({ 
-                    ageRestrictionsDetailed: { 
-                      ...data.ageRestrictionsDetailed, 
-                      minAge: parseInt(value) || undefined 
-                    } 
-                  })}
-                />
-                <Input
-                  type="number"
-                  placeholder="Max age"
-                  value={data.ageRestrictionsDetailed?.maxAge?.toString() || ''}
-                  onChange={(value) => onChange({ 
-                    ageRestrictionsDetailed: { 
-                      ...data.ageRestrictionsDetailed, 
-                      maxAge: parseInt(value) || undefined 
-                    } 
-                  })}
-                />
-              </div>
-              <label className="flex items-center space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={data.ageRestrictionsDetailed?.adultSupervision || false}
-                  onChange={(e) => onChange({ 
-                    ageRestrictionsDetailed: { 
-                      ...data.ageRestrictionsDetailed, 
-                      adultSupervision: e.target.checked 
-                    } 
-                  })}
-                  className="text-green-600"
-                />
-                <span className="text-sm text-gray-700">Adult supervision required</span>
-              </label>
-            </div>
-          </FormField>
+          <FormField
+            name="ageRestrictions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Age Restrictions</FormLabel>
+                <FormControl>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        type="number"
+                        placeholder="Min age"
+                        value={data.ageRestrictionsDetailed?.minAge?.toString() || ''}
+                        onChange={(e) => onChange({ 
+                          ageRestrictionsDetailed: { 
+                            ...data.ageRestrictionsDetailed, 
+                            minAge: parseInt(e.target.value) || undefined 
+                          } 
+                        })}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Max age"
+                        value={data.ageRestrictionsDetailed?.maxAge?.toString() || ''}
+                        onChange={(e) => onChange({ 
+                          ageRestrictionsDetailed: { 
+                            ...data.ageRestrictionsDetailed, 
+                            maxAge: parseInt(e.target.value) || undefined 
+                          } 
+                        })}
+                      />
+                    </div>
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={data.ageRestrictionsDetailed?.adultSupervision || false}
+                        onChange={(e) => onChange({ 
+                          ageRestrictionsDetailed: { 
+                            ...data.ageRestrictionsDetailed, 
+                            adultSupervision: e.target.checked 
+                          } 
+                        })}
+                        className="text-green-600"
+                      />
+                      <span className="text-sm text-gray-700">Adult supervision required</span>
+                    </label>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormField label="Important Information">
-            <Textarea
-              placeholder="Important notes, safety information, what to bring, etc."
-              value={data.importantInfo || ''}
-              onChange={(value) => onChange({ importantInfo: value })}
-              rows={3}
-            />
-          </FormField>
+          <FormField
+            name="importantInfo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Important Information</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Important notes, safety information, what to bring, etc."
+                    value={data.importantInfo || ''}
+                    onChange={(e) => onChange({ importantInfo: e.target.value })}
+                    rows={3}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
       </div>
     </div>
   );
 
   const renderVariants = () => (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="text-center">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">Package Variants</h3>
         <p className="text-gray-600 text-sm">Create different versions of your activity with varying prices and features</p>
@@ -417,80 +569,134 @@ export function ActivityPackageForm({
       <div className="space-y-4">
         {(data.variants || []).map((variant, index) => (
           <div key={index} className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField label="Variant Name">
-                <Input
-                  placeholder="e.g., Standard Package"
-                  value={variant.variantName || ''}
-                  onChange={(value) => {
-                    const newVariants = [...(data.variants || [])];
-                    newVariants[index] = { ...variant, variantName: value };
-                    onChange({ variants: newVariants });
-                  }}
-                />
-              </FormField>
-              <FormField label="Description">
-                <Input
-                  placeholder="Brief description of this variant"
-                  value={variant.description || ''}
-                  onChange={(value) => {
-                    const newVariants = [...(data.variants || [])];
-                    newVariants[index] = { ...variant, description: value };
-                    onChange({ variants: newVariants });
-                  }}
-                />
-              </FormField>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                name={`variantName-${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Variant Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Standard Package"
+                        value={variant.variantName || ''}
+                        onChange={(e) => {
+                          const newVariants = [...(data.variants || [])];
+                          newVariants[index] = { ...variant, variantName: e.target.value };
+                          onChange({ variants: newVariants });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`description-${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Brief description of this variant"
+                        value={variant.description || ''}
+                        onChange={(e) => {
+                          const newVariants = [...(data.variants || [])];
+                          newVariants[index] = { ...variant, description: e.target.value };
+                          onChange({ variants: newVariants });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-              <FormField label="Adult Price">
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  value={variant.priceAdult?.toString() || ''}
-                  onChange={(value) => {
-                    const newVariants = [...(data.variants || [])];
-                    newVariants[index] = { ...variant, priceAdult: parseFloat(value) || 0 };
-                    onChange({ variants: newVariants });
-                  }}
-                />
-              </FormField>
-              <FormField label="Child Price">
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  value={variant.priceChild?.toString() || ''}
-                  onChange={(value) => {
-                    const newVariants = [...(data.variants || [])];
-                    newVariants[index] = { ...variant, priceChild: parseFloat(value) || 0 };
-                    onChange({ variants: newVariants });
-                  }}
-                />
-              </FormField>
-              <FormField label="Min Guests">
-                <Input
-                  type="number"
-                  placeholder="1"
-                  value={variant.minGuests?.toString() || ''}
-                  onChange={(value) => {
-                    const newVariants = [...(data.variants || [])];
-                    newVariants[index] = { ...variant, minGuests: parseInt(value) || 1 };
-                    onChange({ variants: newVariants });
-                  }}
-                />
-              </FormField>
-              <FormField label="Max Guests">
-                <Input
-                  type="number"
-                  placeholder="10"
-                  value={variant.maxGuests?.toString() || ''}
-                  onChange={(value) => {
-                    const newVariants = [...(data.variants || [])];
-                    newVariants[index] = { ...variant, maxGuests: parseInt(value) || 10 };
-                    onChange({ variants: newVariants });
-                  }}
-                />
-              </FormField>
+              <FormField
+                name={`priceAdult-${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adult Price</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={variant.priceAdult?.toString() || ''}
+                        onChange={(e) => {
+                          const newVariants = [...(data.variants || [])];
+                          newVariants[index] = { ...variant, priceAdult: parseFloat(e.target.value) || 0 };
+                          onChange({ variants: newVariants });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`priceChild-${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Child Price</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={variant.priceChild?.toString() || ''}
+                        onChange={(e) => {
+                          const newVariants = [...(data.variants || [])];
+                          newVariants[index] = { ...variant, priceChild: parseFloat(e.target.value) || 0 };
+                          onChange({ variants: newVariants });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`minGuests-${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Min Guests</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="1"
+                        value={variant.minGuests?.toString() || ''}
+                        onChange={(e) => {
+                          const newVariants = [...(data.variants || [])];
+                          newVariants[index] = { ...variant, minGuests: parseInt(e.target.value) || 1 };
+                          onChange({ variants: newVariants });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name={`maxGuests-${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max Guests</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="10"
+                        value={variant.maxGuests?.toString() || ''}
+                        onChange={(e) => {
+                          const newVariants = [...(data.variants || [])];
+                          newVariants[index] = { ...variant, maxGuests: parseInt(e.target.value) || 10 };
+                          onChange({ variants: newVariants });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             
             <div className="flex items-center justify-between mt-6">
@@ -507,22 +713,25 @@ export function ActivityPackageForm({
                 />
                 <span className="text-sm text-gray-700">Active</span>
               </label>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   const newVariants = (data.variants || []).filter((_, i) => i !== index);
                   onChange({ variants: newVariants });
                 }}
-                className="p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-3 text-red-600 hover:bg-red-50"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         ))}
         
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={() => {
             const newVariants = [...(data.variants || []), { 
               variantName: '', 
@@ -538,166 +747,206 @@ export function ActivityPackageForm({
             }];
             onChange({ variants: newVariants });
           }}
-          className="w-full p-6 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-green-500 hover:text-green-600 transition-colors hover:bg-green-50"
+          className="w-full p-6 border-2 border-dashed border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50"
         >
           <Plus className="w-6 h-6 mx-auto mb-3" />
           <span className="font-medium">Add Package Variant</span>
-        </button>
+        </Button>
       </div>
     </div>
   );
 
   const renderPolicies = () => (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <FormField 
-            label="Cancellation Policy"
-            description="Describe your cancellation and refund policy"
-          >
-            <Textarea
-              placeholder="e.g., Free cancellation up to 24 hours before activity..."
-              value={data.cancellationPolicyText || ''}
-              onChange={(value) => onChange({ cancellationPolicyText: value })}
-              rows={4}
-            />
-          </FormField>
-
-          <FormField 
-            label="Terms & Conditions"
-            description="Important terms and conditions for this activity"
-          >
-            <div className="space-y-2">
-              {(data.termsAndConditions || []).map((term, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    placeholder="Add term or condition..."
-                    value={term}
-                    onChange={(value) => {
-                      const newTerms = [...(data.termsAndConditions || [])];
-                      newTerms[index] = value;
-                      onChange({ termsAndConditions: newTerms });
-                    }}
+        <div className="space-y-4">
+          <FormField
+            name="cancellationPolicy"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cancellation Policy</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="e.g., Free cancellation up to 24 hours before activity..."
+                    value={data.cancellationPolicyText || ''}
+                    onChange={(e) => onChange({ cancellationPolicyText: e.target.value })}
+                    rows={4}
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newTerms = (data.termsAndConditions || []).filter((_, i) => i !== index);
-                      onChange({ termsAndConditions: newTerms });
-                    }}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  const newTerms = [...(data.termsAndConditions || []), ''];
-                  onChange({ termsAndConditions: newTerms });
-                }}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-              >
-                + Add Term
-              </button>
-            </div>
-          </FormField>
+                </FormControl>
+                <FormDescription>Describe your cancellation and refund policy</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="termsAndConditions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Terms & Conditions</FormLabel>
+                <FormControl>
+                  <div className="space-y-2">
+                    {(data.termsAndConditions || []).map((term, index) => (
+                      <div key={index} className="flex gap-2">
+                        <Input
+                          placeholder="Add term or condition..."
+                          value={term}
+                          onChange={(e) => {
+                            const newTerms = [...(data.termsAndConditions || [])];
+                            newTerms[index] = e.target.value;
+                            onChange({ termsAndConditions: newTerms });
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newTerms = (data.termsAndConditions || []).filter((_, i) => i !== index);
+                            onChange({ termsAndConditions: newTerms });
+                          }}
+                          className="p-2 text-red-600 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newTerms = [...(data.termsAndConditions || []), ''];
+                        onChange({ termsAndConditions: newTerms });
+                      }}
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
+                      + Add Term
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormDescription>Important terms and conditions for this activity</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        <div className="space-y-6">
-          <FormField 
-            label="Inclusions"
-            description="What's included in the activity"
-          >
-            <div className="space-y-3">
-              {(data.inclusions || []).map((inclusion, index) => (
-                <div key={index} className="flex gap-3">
-                  <Input
-                    placeholder="Add inclusion..."
-                    value={inclusion}
-                    onChange={(value) => {
-                      const newInclusions = [...(data.inclusions || [])];
-                      newInclusions[index] = value;
-                      onChange({ inclusions: newInclusions });
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newInclusions = (data.inclusions || []).filter((_, i) => i !== index);
-                      onChange({ inclusions: newInclusions });
-                    }}
-                    className="p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  const newInclusions = [...(data.inclusions || []), ''];
-                  onChange({ inclusions: newInclusions });
-                }}
-                className="text-green-600 hover:text-green-700 text-sm font-medium"
-              >
-                + Add Inclusion
-              </button>
-            </div>
-          </FormField>
+        <div className="space-y-4">
+          <FormField
+            name="inclusions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Inclusions</FormLabel>
+                <FormControl>
+                  <div className="space-y-3">
+                    {(data.inclusions || []).map((inclusion, index) => (
+                      <div key={index} className="flex gap-3">
+                        <Input
+                          placeholder="Add inclusion..."
+                          value={inclusion}
+                          onChange={(e) => {
+                            const newInclusions = [...(data.inclusions || [])];
+                            newInclusions[index] = e.target.value;
+                            onChange({ inclusions: newInclusions });
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newInclusions = (data.inclusions || []).filter((_, i) => i !== index);
+                            onChange({ inclusions: newInclusions });
+                          }}
+                          className="p-3 text-red-600 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newInclusions = [...(data.inclusions || []), ''];
+                        onChange({ inclusions: newInclusions });
+                      }}
+                      className="text-green-600 hover:text-green-700 text-sm font-medium"
+                    >
+                      + Add Inclusion
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormDescription>What's included in the activity</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormField 
-            label="Exclusions"
-            description="What's not included in the activity"
-          >
-            <div className="space-y-3">
-              {(data.exclusions || []).map((exclusion, index) => (
-                <div key={index} className="flex gap-3">
-                  <Input
-                    placeholder="Add exclusion..."
-                    value={exclusion}
-                    onChange={(value) => {
-                      const newExclusions = [...(data.exclusions || [])];
-                      newExclusions[index] = value;
-                      onChange({ exclusions: newExclusions });
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newExclusions = (data.exclusions || []).filter((_, i) => i !== index);
-                      onChange({ exclusions: newExclusions });
-                    }}
-                    className="p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  const newExclusions = [...(data.exclusions || []), ''];
-                  onChange({ exclusions: newExclusions });
-                }}
-                className="text-green-600 hover:text-green-700 text-sm font-medium"
-              >
-                + Add Exclusion
-              </button>
-            </div>
-          </FormField>
+          <FormField
+            name="exclusions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Exclusions</FormLabel>
+                <FormControl>
+                  <div className="space-y-3">
+                    {(data.exclusions || []).map((exclusion, index) => (
+                      <div key={index} className="flex gap-3">
+                        <Input
+                          placeholder="Add exclusion..."
+                          value={exclusion}
+                          onChange={(e) => {
+                            const newExclusions = [...(data.exclusions || [])];
+                            newExclusions[index] = e.target.value;
+                            onChange({ exclusions: newExclusions });
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newExclusions = (data.exclusions || []).filter((_, i) => i !== index);
+                            onChange({ exclusions: newExclusions });
+                          }}
+                          className="p-3 text-red-600 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newExclusions = [...(data.exclusions || []), ''];
+                        onChange({ exclusions: newExclusions });
+                      }}
+                      className="text-green-600 hover:text-green-700 text-sm font-medium"
+                    >
+                      + Add Exclusion
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormDescription>What's not included in the activity</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-4"
       >
         <div className="inline-flex items-center gap-3 px-6 py-3 bg-green-50 rounded-xl mb-4 border border-green-200">
           <MapPin className="w-5 h-5 text-green-600" />
@@ -718,35 +967,39 @@ export function ActivityPackageForm({
       >
         <div className="flex space-x-2">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
+              variant={activeTab === tab.id ? "default" : "ghost"}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-2 font-medium text-sm transition-all duration-200 ${
                 activeTab === tab.id
-                  ? 'bg-green-50 text-green-600 border border-green-200'
+                  ? 'bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
       </motion.div>
 
       {/* Tab Content */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-white rounded-2xl border border-gray-200 p-8 shadow-lg"
-      >
-        {activeTab === 'basic' && renderBasicInfo()}
-        {activeTab === 'details' && renderActivityDetails()}
-        {activeTab === 'variants' && renderVariants()}
-        {activeTab === 'policies' && renderPolicies()}
-      </motion.div>
+      <Card>
+        <CardContent className="p-8">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            {activeTab === 'basic' && renderBasicInfo()}
+            {activeTab === 'details' && renderActivityDetails()}
+            {activeTab === 'variants' && renderVariants()}
+            {activeTab === 'policies' && renderPolicies()}
+          </motion.div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
 
 interface FormFieldProps {
   label: string;
@@ -21,18 +22,23 @@ export function FormField({
   className 
 }: FormFieldProps) {
   return (
-    <div className={cn("space-y-2", className)}>
-      <label className="block text-sm font-medium text-gray-700">
+    <FormItem className={cn("space-y-2", className)}>
+      <FormLabel className={cn("text-sm font-medium", required && "after:content-['*'] after:ml-1 after:text-red-500")}>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
+      </FormLabel>
       {description && (
-        <p className="text-xs text-gray-500">{description}</p>
+        <FormDescription className="text-xs text-gray-500">
+          {description}
+        </FormDescription>
       )}
-      {children}
+      <FormControl>
+        {children}
+      </FormControl>
       {error && (
-        <p className="text-xs text-red-600">{error}</p>
+        <FormMessage className="text-xs text-red-600">
+          {error}
+        </FormMessage>
       )}
-    </div>
+    </FormItem>
   );
 }
