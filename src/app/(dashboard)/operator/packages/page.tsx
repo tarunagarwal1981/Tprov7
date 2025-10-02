@@ -256,9 +256,13 @@ export default function OperatorPackagesPage() {
                 <p className="text-sm text-slate-600">Manage your travel packages</p>
               </div>
               <Link href="/operator/packages/create">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-1.5" />
-                  Create
+                <Button 
+                  size="sm" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200"
+                  style={{ color: 'white', backgroundColor: '#2563eb' }}
+                >
+                  <Plus className="w-4 h-4" style={{ color: 'white' }} />
+                  Create Package
                 </Button>
               </Link>
             </div>
@@ -344,8 +348,12 @@ export default function OperatorPackagesPage() {
               </p>
               {!searchQuery && (
                 <Link href="/operator/packages/create">
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
+                  <Button 
+                    size="lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200"
+                    style={{ color: 'white', backgroundColor: '#2563eb' }}
+                  >
+                    <Plus className="w-4 h-4" style={{ color: 'white' }} />
                     Create Package
                   </Button>
                 </Link>
