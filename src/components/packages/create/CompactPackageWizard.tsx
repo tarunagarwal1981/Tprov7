@@ -1488,7 +1488,7 @@ const MultiCityPackageForm = ({ data, onChange }: FormProps) => {
                   {(!data.itinerary || data.itinerary.length === 0) && (
                     <div className="text-center py-12 text-gray-500">
                       <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                      <p>No itinerary days added yet. Click "Add Day" to start planning.</p>
+                      <p>No itinerary days added yet. Click &quot;Add Day&quot; to start planning.</p>
                     </div>
                   )}
                 </div>
@@ -1856,7 +1856,7 @@ const MultiCityPackageWithHotelForm = ({ data, onChange }: FormProps) => {
                   {(!data.hotels || data.hotels.length === 0) && (
                     <div className="text-center py-12 text-gray-500">
                       <Bed className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                      <p>No hotels added yet. Click "Add Hotel" to include accommodation.</p>
+                      <p>No hotels added yet. Click &quot;Add Hotel&quot; to include accommodation.</p>
                     </div>
                   )}
                 </div>
@@ -2119,7 +2119,7 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
                       {departureDates.length === 0 && (
                         <div className="text-center py-4 text-gray-500">
                           <CalendarIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                          <p>No departure dates added yet. Click "Add Date" to set tour dates.</p>
+                          <p>No departure dates added yet. Click &quot;Add Date&quot; to set tour dates.</p>
                         </div>
                       )}
                     </CardContent>
@@ -2190,7 +2190,7 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
                   {(!data.destinations || data.destinations.length === 0) && (
                     <div className="text-center py-4 text-gray-500">
                       <MapPin className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>No destinations added yet. Click "Add Destination" to start.</p>
+                      <p>No destinations added yet. Click &quot;Add Destination&quot; to start.</p>
                     </div>
                   )}
                 </div>
@@ -2277,7 +2277,7 @@ const FixedDepartureForm = ({ data, onChange }: FormProps) => {
                 {(!data.itinerary || data.itinerary.length === 0) && (
                   <div className="text-center py-12 text-gray-500">
                     <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p>No itinerary days added yet. Click "Add Day" to start planning.</p>
+                    <p>No itinerary days added yet. Click &quot;Add Day&quot; to start planning.</p>
                   </div>
                 )}
               </div>
@@ -3163,7 +3163,7 @@ const VehicleConfigurationSection = ({
           <div className="text-center py-4 text-gray-500">
             <Car className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>No vehicle configurations added yet</p>
-            <p className="text-sm">Click "Add Vehicle" to get started</p>
+            <p className="text-sm">Click &quot;Add Vehicle&quot; to get started</p>
           </div>
         )}
       </CardContent>

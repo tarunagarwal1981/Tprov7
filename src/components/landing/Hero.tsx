@@ -86,7 +86,7 @@ export function Hero() {
                 size="lg"
                 className="w-full sm:w-auto h-12 px-8 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-soft hover:shadow-medium transition-all group"
               >
-                I'm a Tour Operator
+                I&apos;m a Tour Operator
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -97,7 +97,7 @@ export function Hero() {
                 variant="outline"
                 className="w-full sm:w-auto h-12 px-8 border-2 border-slate-200 hover:border-blue-600 hover:bg-blue-50 font-medium transition-all group"
               >
-                I'm a Travel Agent
+                I&apos;m a Travel Agent
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>

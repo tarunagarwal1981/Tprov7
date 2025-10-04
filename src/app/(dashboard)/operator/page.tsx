@@ -359,7 +359,7 @@ export default function OperatorDashboard() {
                   Dashboard Overview
                 </h1>
                 <p className="text-slate-600 mt-1">
-                  Welcome back! Here's what's happening today.
+                  Welcome back! Here&apos;s what&apos;s happening today.
                 </p>
               </div>
               <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">

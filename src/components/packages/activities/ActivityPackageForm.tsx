@@ -879,7 +879,7 @@ export function ActivityPackageForm({
                     </Button>
                   </div>
                 </FormControl>
-                <FormDescription>What's included in the activity</FormDescription>
+                <FormDescription>What&apos;s included in the activity</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -931,7 +931,7 @@ export function ActivityPackageForm({
                     </Button>
                   </div>
                 </FormControl>
-                <FormDescription>What's not included in the activity</FormDescription>
+                <FormDescription>What&apos;s not included in the activity</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

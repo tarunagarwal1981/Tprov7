@@ -749,7 +749,7 @@ const DestinationsManager = ({ destinations, onChange }: {
 
       {safeDestinations.length === 0 && (
         <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
-          <p>No destinations added yet. Click "Add Destination" to start.</p>
+          <p>No destinations added yet. Click &quot;Add Destination&quot; to start.</p>
         </div>
       )}
     </div>
